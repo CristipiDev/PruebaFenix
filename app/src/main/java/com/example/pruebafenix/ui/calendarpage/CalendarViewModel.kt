@@ -1,6 +1,8 @@
 package com.example.pruebafenix.ui.calendarpage
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,35 +12,32 @@ import com.example.pruebafenix.domain.model.LessonsProvider
 import com.example.pruebafenix.ui.utils.DayNameEnum
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 class CalendarViewModel: ViewModel() {
 
     var state by mutableStateOf(CalendarUiState())
     val currentLessons = LessonsProvider()
 
     init {
-       getDate(null)
+       getDate(LocalDate.now())
     }
 
     @SuppressLint("SimpleDateFormat")
-    private fun getDate(localDate: LocalDate?) {
-        var date: Date? = null
-        localDate?.let {
-            date = SimpleDateFormat("yyyy-MM-dd").parse(localDate.toString())
-        }
+    private fun getDate(localDate: LocalDate) {
+        val date: Date = SimpleDateFormat("yyyy-MM-dd").parse(localDate.toString())
 
         val dayName: String = SimpleDateFormat("EEEE", Locale ( "es" , "ES" ))
-            .format(date ?: Calendar.getInstance().time).uppercase()
+            .format(date).uppercase()
 
         val dayNumber = SimpleDateFormat("dd", Locale ( "es" , "ES" ))
-            .format(date ?: Calendar.getInstance().time).toInt()
+            .format(date).toInt()
 
         val monthName = SimpleDateFormat("MMMM", Locale ( "es" , "ES"))
-            .format(date ?: Calendar.getInstance().time)
+            .format(date)
 
         val listCurrentLessons = currentLessons.getLessonsForDay(getDayNameNumber(dayName))
 
@@ -47,10 +46,10 @@ class CalendarViewModel: ViewModel() {
 
 
         state = state.copy(
+            selectedDate = localDate,
             dayName = dayName,
             dayNumber = dayNumber,
             monthName = monthName,
-            currentLessonsList = listCurrentLessons,
             currentMorningLessonsList = morningLessonList,
             currentNoonLessonsList = noonLessonList
         )
@@ -60,8 +59,6 @@ class CalendarViewModel: ViewModel() {
         when(onEvent) {
             is CalendarEvent.OnClickNewDate -> {
                 getDate(onEvent.onClickDate)
-
-
             }
         }
     }
