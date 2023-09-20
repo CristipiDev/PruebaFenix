@@ -1,9 +1,6 @@
 package com.example.pruebafenix.ui.calendarpage
 
-import android.app.DatePickerDialog
-import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -72,7 +70,7 @@ fun CalendarScreen(
             .fillMaxWidth()
         ) {
             item {
-                dayMenu(
+                DayMenu(
                     viewModel.state,
                     viewModel::onEvent)
 
@@ -88,13 +86,18 @@ fun CalendarScreen(
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
+            }
 
-                lessonBox(R.color.salmon,
+            items(viewModel.state.currentLessonsList) {
+                LessonBox(R.color.salmon,
                     "Pole Exotic",
                     "11:30",
                     "13:30",
                     10)
+            }
 
+
+            item {
                 Divider(
                     color = MaterialTheme.colorScheme.background,
                     thickness = 5.dp
@@ -107,19 +110,19 @@ fun CalendarScreen(
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
-                lessonBox(R.color.background,
+                LessonBox(R.color.blue,
                     "Pole Sport",
                     "17:30",
                     "19:00",
                     10)
-                lessonBox(R.color.caramel,
+                LessonBox(R.color.caramel,
                     "Aro",
                     "19:30",
                     "21:00",
                     10)
 
             }
-            }
+        }
 
 
     }
@@ -128,7 +131,7 @@ fun CalendarScreen(
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun dayMenu(
+fun DayMenu(
     state: CalendarUiState,
     onOKPickerCalendar: (CalendarEvent) -> Unit
 ) {
@@ -144,6 +147,7 @@ fun dayMenu(
         selection = CalendarSelection.Date(
             selectedDate = selectedDate.value
         ) { newDate ->
+            selectedDate.value = newDate
             onOKPickerCalendar(CalendarEvent.OnClickNewDate(newDate))
         })
 
@@ -184,7 +188,7 @@ fun dayMenu(
 }
 
 @Composable
-fun lessonBox(
+fun LessonBox(
     colorContainer: Int,
     lessonName: String,
     startTime: String,

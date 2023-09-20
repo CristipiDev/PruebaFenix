@@ -1,6 +1,6 @@
 package com.example.pruebafenix.domain.model
 
-class LessonProvider {
+class LessonsProvider {
 
     fun getLessonsForDay(day:Int): List<LessonModel>{
         val listLessonForDay: ArrayList<LessonModel> = ArrayList()
