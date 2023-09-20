@@ -32,7 +32,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.pruebafenix.R
 import com.example.pruebafenix.ui.theme.PruebaFenixTheme
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -57,12 +56,13 @@ fun CalendarScreen(
                             "Add")
                     }
                 },
-                colors = TopAppBarDefaults.smallTopAppBarColors(
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                ))
+                )
+            )
         }
     ) { innerPadding ->
         LazyColumn(modifier = Modifier
@@ -88,12 +88,12 @@ fun CalendarScreen(
                 )
             }
 
-            items(viewModel.state.currentLessonsList) {
-                LessonBox(R.color.salmon,
-                    "Pole Exotic",
-                    "11:30",
-                    "13:30",
-                    10)
+            items(viewModel.state.currentMorningLessonsList) {lesson ->
+                LessonBox(lesson.lessonColor,
+                    lesson.lessonName,
+                    lesson.lessonStartTime,
+                    lesson.lessonEndTime,
+                    lesson.lessonVacancy)
             }
 
 
@@ -110,17 +110,15 @@ fun CalendarScreen(
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
-                LessonBox(R.color.blue,
-                    "Pole Sport",
-                    "17:30",
-                    "19:00",
-                    10)
-                LessonBox(R.color.caramel,
-                    "Aro",
-                    "19:30",
-                    "21:00",
-                    10)
 
+            }
+
+            items(viewModel.state.currentNoonLessonsList) {lesson ->
+                LessonBox(lesson.lessonColor,
+                    lesson.lessonName,
+                    lesson.lessonStartTime,
+                    lesson.lessonEndTime,
+                    lesson.lessonVacancy)
             }
         }
 

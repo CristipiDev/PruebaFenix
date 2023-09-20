@@ -12,17 +12,15 @@
     <color name="salmon">#D68893</color>
     <color name="blue">#94BAD0</color>
     <color name="caramel">#C58D63</color>
+    <color name="pink">#DA9DC2</color>
+    <color name="lilac">#C498CE</color>
+    <color name="orange">#DE7F4E</color>
+    <color name="grey">#A49E98</color>
+    <color name="purple">#A283C1</color>
+    <color name="green">#BACA9F</color>
 
 
     <color name="background">#FFFFEFE1</color>
     <color name="secondary">#FF756354</color>
 
-
-    val Vanilla = Color(0xFFFFEFE1)
-    val DarkVanilla = Color(0xFFE7CBBB)
-    val Sand = Color(0xFFD9B89E)
-    val DarkSand = Color(0xFFD5A489)
-    val LightBrown = Color(0xFF8B7666)
-    val Brown = Color(0xFF756354)
-    val DarkBrown = Color(0xFF4B423C)
 </resources>

@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.pruebafenix.domain.model.LessonModel
 import com.example.pruebafenix.domain.model.LessonsProvider
 import com.example.pruebafenix.ui.utils.DayNameEnum
 import java.text.SimpleDateFormat
@@ -41,11 +42,17 @@ class CalendarViewModel: ViewModel() {
 
         val listCurrentLessons = currentLessons.getLessonsForDay(getDayNameNumber(dayName))
 
+        val morningLessonList = getMorningNoonLessonList(listCurrentLessons)[0]
+        val noonLessonList = getMorningNoonLessonList(listCurrentLessons)[1]
+
+
         state = state.copy(
             dayName = dayName,
             dayNumber = dayNumber,
             monthName = monthName,
-            currentLessonsList = listCurrentLessons
+            currentLessonsList = listCurrentLessons,
+            currentMorningLessonsList = morningLessonList,
+            currentNoonLessonsList = noonLessonList
         )
     }
 
@@ -69,6 +76,26 @@ class CalendarViewModel: ViewModel() {
             "SÁBADO" -> { DayNameEnum.SATURDAY.dayNumber }
             else -> { DayNameEnum.SUNDAY.dayNumber }
         }
+    }
+
+    private fun getMorningNoonLessonList(listCurrentLessons: List<LessonModel>): List<List<LessonModel>> {
+        val morningNoonLessonList: ArrayList<ArrayList<LessonModel>> = ArrayList()
+
+        val morningLessonList: ArrayList<LessonModel> = ArrayList()
+        val noonLessonList: ArrayList<LessonModel> = ArrayList()
+
+        listCurrentLessons.forEach { lesson ->
+            if(lesson.lessonStartTime.split(":")[0].toInt() <= 14){
+                morningLessonList.add(lesson)
+            } else {
+                noonLessonList.add(lesson)
+            }
+        }
+
+        morningNoonLessonList.add(morningLessonList)
+        morningNoonLessonList.add(noonLessonList)
+
+        return morningNoonLessonList
     }
 
 
