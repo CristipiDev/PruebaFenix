@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.PruebaFenix" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="datepicker" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:colorAccent">@color/secondary</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:colorControlActivated">@color/secondary</item>
+        <item name="android:colorControlHighlight">@color/secondary</item>
+
+        <item name="android:selectableItemBackgroundBorderless">@color/blue</item>
+
+    </style>
+</resources>

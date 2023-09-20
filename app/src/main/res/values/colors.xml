@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+
+    <color name="salmon">#D68893</color>
+    <color name="blue">#94BAD0</color>
+    <color name="caramel">#C58D63</color>
+
+
+    <color name="background">#FFFFEFE1</color>
+    <color name="secondary">#FF756354</color>
+
+
+    val Vanilla = Color(0xFFFFEFE1)
+    val DarkVanilla = Color(0xFFE7CBBB)
+    val Sand = Color(0xFFD9B89E)
+    val DarkSand = Color(0xFFD5A489)
+    val LightBrown = Color(0xFF8B7666)
+    val Brown = Color(0xFF756354)
+    val DarkBrown = Color(0xFF4B423C)
+</resources>
