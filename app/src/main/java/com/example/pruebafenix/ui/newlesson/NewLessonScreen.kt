@@ -1,4 +1,4 @@
-package com.example.pruebafenix.ui
+package com.example.pruebafenix.ui.newlesson
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
