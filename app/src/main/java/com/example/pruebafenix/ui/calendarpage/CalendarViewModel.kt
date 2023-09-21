@@ -10,14 +10,19 @@ import androidx.lifecycle.ViewModel
 import com.example.pruebafenix.domain.model.LessonModel
 import com.example.pruebafenix.domain.model.LessonsProvider
 import com.example.pruebafenix.ui.utils.DayNameEnum
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-class CalendarViewModel: ViewModel() {
+@HiltViewModel
+class CalendarViewModel @Inject constructor(
+
+) : ViewModel() {
 
     var state by mutableStateOf(CalendarUiState())
     val currentLessons = LessonsProvider()
