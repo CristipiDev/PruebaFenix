@@ -20,7 +20,7 @@ import java.util.Locale
 class CalendarViewModel: ViewModel() {
 
     var state by mutableStateOf(CalendarUiState())
-    val currentLessons = LessonsProvider()
+    private val currentLessons = LessonsProvider()
 
     init {
        getDate(LocalDate.now())
@@ -39,10 +39,12 @@ class CalendarViewModel: ViewModel() {
         val monthName = SimpleDateFormat("MMMM", Locale ( "es" , "ES"))
             .format(date)
 
-        val listCurrentLessons = currentLessons.getLessonsForDay(getDayNameNumber(dayName))
+        val listCurrentLessons = currentLessons.getLessonsForDay(dayName)
 
-        val morningLessonList = getMorningNoonLessonList(listCurrentLessons)[0]
-        val noonLessonList = getMorningNoonLessonList(listCurrentLessons)[1]
+        val morningNoonLessonList = getMorningNoonLessonList(listCurrentLessons)
+
+        val morningLessonList = morningNoonLessonList[0]
+        val noonLessonList = morningNoonLessonList[1]
 
 
         state = state.copy(
