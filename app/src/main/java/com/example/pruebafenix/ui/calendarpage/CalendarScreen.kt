@@ -28,10 +28,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.pruebafenix.ui.navigation.AppScreens
 import com.example.pruebafenix.ui.theme.PruebaFenixTheme
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -43,14 +46,15 @@ import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
-    viewModel: CalendarViewModel
+    viewModel: CalendarViewModel,
+    navController: NavController,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Fenix")},
                 actions = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { navController.navigate(AppScreens.NewLessonScreen.route) }) {
                         Icon(Icons.Filled.Add,
                             "Add")
                     }
@@ -232,7 +236,8 @@ fun LessonBox(
 @Composable
 fun GreetingPreview() {
     val viewModel = CalendarViewModel()
+    val nav = NavController(LocalContext.current)
     PruebaFenixTheme {
-        CalendarScreen(viewModel)
+        CalendarScreen(viewModel, nav)
     }
 }

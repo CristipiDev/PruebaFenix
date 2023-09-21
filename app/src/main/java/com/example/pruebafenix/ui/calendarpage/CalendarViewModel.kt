@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.pruebafenix.domain.model.LessonModel
 import com.example.pruebafenix.domain.model.LessonsProvider
-import com.example.pruebafenix.ui.utils.DayNameEnum
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -62,18 +61,6 @@ class CalendarViewModel: ViewModel() {
             is CalendarEvent.OnClickNewDate -> {
                 getDate(onEvent.onClickDate)
             }
-        }
-    }
-
-    private fun getDayNameNumber(dayName: String): Int {
-        return when(dayName) {
-            "LUNES" -> { DayNameEnum.MONDAY.dayNumber }
-            "MARTES" -> { DayNameEnum.TUESDAY.dayNumber }
-            "MIÉRCOLES" -> { DayNameEnum.WEDNESDAY.dayNumber }
-            "JUEVES" -> { DayNameEnum.THURSDAY.dayNumber }
-            "VIERNES" -> { DayNameEnum.FRIDAY.dayNumber }
-            "SÁBADO" -> { DayNameEnum.SATURDAY.dayNumber }
-            else -> { DayNameEnum.SUNDAY.dayNumber }
         }
     }
 
