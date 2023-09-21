@@ -28,6 +28,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -237,7 +238,8 @@ fun LessonBox(
 @Composable
 fun GreetingPreview() {
     val viewModel = CalendarViewModel()
+    val nav = NavController(LocalContext.current)
     PruebaFenixTheme {
-        //CalendarScreen(viewModel)
+        CalendarScreen(viewModel, nav)
     }
 }

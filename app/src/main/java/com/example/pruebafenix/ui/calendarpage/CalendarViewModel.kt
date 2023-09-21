@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.pruebafenix.domain.model.LessonModel
 import com.example.pruebafenix.domain.model.LessonsProvider
-import com.example.pruebafenix.ui.utils.DayNameEnum
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -25,7 +24,7 @@ class CalendarViewModel @Inject constructor(
 ) : ViewModel() {
 
     var state by mutableStateOf(CalendarUiState())
-    val currentLessons = LessonsProvider()
+    private val currentLessons = LessonsProvider()
 
     init {
        getDate(LocalDate.now())
@@ -44,10 +43,12 @@ class CalendarViewModel @Inject constructor(
         val monthName = SimpleDateFormat("MMMM", Locale ( "es" , "ES"))
             .format(date)
 
-        val listCurrentLessons = currentLessons.getLessonsForDay(getDayNameNumber(dayName))
+        val listCurrentLessons = currentLessons.getLessonsForDay(dayName)
 
-        val morningLessonList = getMorningNoonLessonList(listCurrentLessons)[0]
-        val noonLessonList = getMorningNoonLessonList(listCurrentLessons)[1]
+        val morningNoonLessonList = getMorningNoonLessonList(listCurrentLessons)
+
+        val morningLessonList = morningNoonLessonList[0]
+        val noonLessonList = morningNoonLessonList[1]
 
 
         state = state.copy(
@@ -65,18 +66,6 @@ class CalendarViewModel @Inject constructor(
             is CalendarEvent.OnClickNewDate -> {
                 getDate(onEvent.onClickDate)
             }
-        }
-    }
-
-    private fun getDayNameNumber(dayName: String): Int {
-        return when(dayName) {
-            "LUNES" -> { DayNameEnum.MONDAY.dayNumber }
-            "MARTES" -> { DayNameEnum.TUESDAY.dayNumber }
-            "MIÉRCOLES" -> { DayNameEnum.WEDNESDAY.dayNumber }
-            "JUEVES" -> { DayNameEnum.THURSDAY.dayNumber }
-            "VIERNES" -> { DayNameEnum.FRIDAY.dayNumber }
-            "SÁBADO" -> { DayNameEnum.SATURDAY.dayNumber }
-            else -> { DayNameEnum.SUNDAY.dayNumber }
         }
     }
 
