@@ -41,6 +41,7 @@ import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
+import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +78,7 @@ fun CalendarScreen(
             item {
                 DayMenu(
                     viewModel.state,
-                    viewModel::onEvent)
+                    viewModel::getDate)
 
                 Divider(
                     color = MaterialTheme.colorScheme.background,
@@ -136,7 +137,7 @@ fun CalendarScreen(
 @Composable
 fun DayMenu(
     state: CalendarUiState,
-    onNewDate: (CalendarEvent) -> Unit
+    onNewDate: (LocalDate) -> Unit
 ) {
     val calendarState = rememberUseCaseState()
 
@@ -149,7 +150,7 @@ fun DayMenu(
         selection = CalendarSelection.Date(
             selectedDate = state.selectedDate
         ) { newDate ->
-            onNewDate(CalendarEvent.OnClickNewDate(newDate))
+            onNewDate(newDate)
         })
 
     Divider(
@@ -163,7 +164,7 @@ fun DayMenu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            onClick = {onNewDate(CalendarEvent.OnClickNewDate(state.selectedDate!!.minusDays(1))) },
+            onClick = {onNewDate(state.selectedDate!!.minusDays(1)) },
             modifier = Modifier.weight(1f)) {
             Icon(Icons.Filled.KeyboardArrowLeft,
                 "Previous day",
@@ -180,7 +181,7 @@ fun DayMenu(
         )
 
         IconButton(
-            onClick = {onNewDate(CalendarEvent.OnClickNewDate(state.selectedDate!!.plusDays(1))) },
+            onClick = {onNewDate(state.selectedDate!!.plusDays(1)) },
             modifier = Modifier.weight(1f)){
             Icon(Icons.Filled.KeyboardArrowRight,
                 "Next day",

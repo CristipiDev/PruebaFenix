@@ -22,26 +22,26 @@ import javax.inject.Inject
 class CalendarViewModel @Inject constructor(
 
 ) : ViewModel() {
-
-    var state by mutableStateOf(CalendarUiState())
     private val currentLessons = LessonsProvider()
 
-    init {
-       getDate(LocalDate.now())
-    }
+    var state by mutableStateOf(CalendarUiState(
+        selectedDate = LocalDate.now(),
+        dayName = getDayName(getDateFromLocalDate(LocalDate.now())),
+        dayNumber = getDayNumber(getDateFromLocalDate(LocalDate.now())),
+        monthName = getMonthName(getDateFromLocalDate(LocalDate.now())),
+        currentMorningLessonsList = getMorningNoonLessonList(
+            currentLessons.getLessonsForDay(getDayName(getDateFromLocalDate(LocalDate.now()))))[0],
+        currentNoonLessonsList = getMorningNoonLessonList(
+            currentLessons.getLessonsForDay(getDayName(getDateFromLocalDate(LocalDate.now()))))[1]
+    ))
+
 
     @SuppressLint("SimpleDateFormat")
-    private fun getDate(localDate: LocalDate) {
-        val date: Date = SimpleDateFormat("yyyy-MM-dd").parse(localDate.toString())
+    fun getDate(localDate: LocalDate?) {
 
-        val dayName: String = SimpleDateFormat("EEEE", Locale ( "es" , "ES" ))
-            .format(date).uppercase()
-
-        val dayNumber = SimpleDateFormat("dd", Locale ( "es" , "ES" ))
-            .format(date).toInt()
-
-        val monthName = SimpleDateFormat("MMMM", Locale ( "es" , "ES"))
-            .format(date)
+        val dayName: String = getDayName(getDateFromLocalDate(localDate))
+        val dayNumber = getDayNumber(getDateFromLocalDate(localDate))
+        val monthName = getMonthName(getDateFromLocalDate(localDate))
 
         val listCurrentLessons = currentLessons.getLessonsForDay(dayName)
 
@@ -59,14 +59,6 @@ class CalendarViewModel @Inject constructor(
             currentMorningLessonsList = morningLessonList,
             currentNoonLessonsList = noonLessonList
         )
-    }
-
-    fun onEvent(onEvent: CalendarEvent) {
-        when(onEvent) {
-            is CalendarEvent.OnClickNewDate -> {
-                getDate(onEvent.onClickDate)
-            }
-        }
     }
 
     private fun getMorningNoonLessonList(listCurrentLessons: List<LessonModel>): List<List<LessonModel>> {
@@ -89,5 +81,26 @@ class CalendarViewModel @Inject constructor(
         return morningNoonLessonList
     }
 
+    private fun getDateFromLocalDate(localDate: LocalDate?): Date {
+        var date: Date = SimpleDateFormat("yyyy-MM-dd").parse(LocalDate.now().toString())
+        localDate?.let {
+            date = SimpleDateFormat("yyyy-MM-dd").parse(it.toString())
+        }
+        return date
+    }
+    private fun getDayName(date: Date): String {
+        return SimpleDateFormat("EEEE", Locale ( "es" , "ES" ))
+            .format(date).uppercase()
+    }
+
+    private fun getDayNumber(date: Date): Int {
+        return SimpleDateFormat("dd", Locale ( "es" , "ES" ))
+            .format(date).toInt()
+    }
+
+    private fun getMonthName(date: Date): String {
+        return SimpleDateFormat("MMMM", Locale ( "es" , "ES"))
+            .format(date)
+    }
 
 }
