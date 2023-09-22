@@ -7,14 +7,14 @@ class LessonsProvider {
     fun getLessonsForDay(dayName: String): List<LessonModel>{
         val listLessonForDay: ArrayList<LessonModel> = ArrayList()
 
-        lessons.forEach {lesson ->
-            if (lesson.lessonDay == dayName) listLessonForDay.add(lesson)
-        }
+        //lessons.forEach {lesson ->
+        //    if (lesson.lessonDay == dayName) listLessonForDay.add(lesson)
+        //}
 
         return listLessonForDay
     }
 
-    val lessons = listOf<LessonModel>(
+    /*val lessons = listOf<LessonModel>(
         LessonModel(R.color.salmon, "LUNES", "Pole Exotic", "11:30", "13:00", 10),
         LessonModel(R.color.blue, "LUNES", "Pole Sport", "17:30", "19:00", 10),
         LessonModel(R.color.caramel, "LUNES", "Aro", "19:30", "21:00", 10),
@@ -30,5 +30,5 @@ class LessonsProvider {
         LessonModel(R.color.caramel, "VIERNES", "Aro", "10:00", "11:30", 10),
         LessonModel(R.color.green, "VIERNES", "Pole Conditioning", "18:00", "19:00", 10),
         LessonModel(R.color.grey, "VIERNES", "Flesibilidad", "19:00", "20:00", 10)
-    )
+    )*/
 }

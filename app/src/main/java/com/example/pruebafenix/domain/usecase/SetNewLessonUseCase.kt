@@ -4,7 +4,7 @@ import com.example.pruebafenix.data.repository.LessonRepository
 import com.example.pruebafenix.domain.model.LessonModel
 import javax.inject.Inject
 
-class setNewLesson @Inject constructor(
+class SetNewLessonUseCase @Inject constructor(
     private val lessonRepository: LessonRepository
 ) {
 

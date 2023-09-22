@@ -11,11 +11,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -23,12 +28,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.pruebafenix.ui.navigation.AppScreens
 
 @Composable
-fun NewLessonScreen(
+fun LessonInfoScreen(
+    viewModel: LessonInfoViewModel = hiltViewModel(),
     navController: NavController
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     Column {
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End)
@@ -39,6 +49,13 @@ fun NewLessonScreen(
                     "Close",
                     tint = MaterialTheme.colorScheme.primary)
             }
+        }
+        Text(text = "Dia:",
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.primary)
+        DropdownMenu(expanded = expanded,
+            onDismissRequest = { expanded = false }) {
+
         }
         ItemLesson("Nombre clase:")
         ItemLesson("Hora de inicio:")
@@ -87,5 +104,5 @@ private fun ItemLesson(
 @Composable
 fun Preview() {
     val nav = NavController(LocalContext.current)
-    NewLessonScreen(nav)
+    //LessonInfoScreen(nav)
 }

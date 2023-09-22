@@ -6,5 +6,6 @@ data class LessonModel(
     val lessonName: String,
     val lessonStartTime: String,
     val lessonEndTime: String,
-    val lessonVacancy: Int
+    val lessonVacancy: Int,
+    val id: Int
 )

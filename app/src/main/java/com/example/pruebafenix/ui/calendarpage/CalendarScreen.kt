@@ -56,7 +56,7 @@ fun CalendarScreen(
                 title = { Text("Fenix")},
                 actions = {
                     IconButton(onClick = {
-                        navController.navigate(route = AppScreens.NewLessonScreen.route)
+                        navController.navigate(route = AppScreens.LessonInfoScreen.route)
                     }) {
                         Icon(Icons.Filled.Add,
                             "Add")
