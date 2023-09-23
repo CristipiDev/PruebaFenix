@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.pruebafenix.R
 import com.example.pruebafenix.domain.model.LessonModel
 import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +16,14 @@ class LessonInfoViewModel @Inject constructor(
 ): ViewModel() {
 
     var state by mutableStateOf(LessonInfoUiState(
+        lessonColor = R.color.salmon,
         lessonDay = "LUNES",
-        dropdownDayNameList = listOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO")
+        dropdownDayNameList = listOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES",
+            "VIERNES", "SABADO", "DOMINGO"),
+        lessonColorList = listOf(R.color.salmon, R.color.blue, R.color.caramel,
+               R.color.pink, R.color.lilac, R.color.orange, R.color.grey,
+               R.color.purple, R.color.green)
+
     ))
 
     suspend fun setNewLessonInDb(state: LessonInfoUiState){
@@ -54,6 +61,7 @@ class LessonInfoViewModel @Inject constructor(
     fun OnChangeEndTime(endTime: String) { state = state.copy(lessonEndTime = endTime) }
     fun OnChangeVacancy(vacancy: Int) { state = state.copy(lessonVacancy = vacancy) }
 
+    //Dropdown
     fun changeExpandedDropdown(expanded: Boolean) { state = state.copy(expanded = !expanded) }
     fun onClickItemDropdown(newDayName: String) {
         state = state.copy(
@@ -61,5 +69,8 @@ class LessonInfoViewModel @Inject constructor(
             expanded = false
         )
     }
+
+    //RadioButton color
+    fun onChangeColor(newColor: Int) { state = state.copy(lessonColor = newColor) }
 
 }
