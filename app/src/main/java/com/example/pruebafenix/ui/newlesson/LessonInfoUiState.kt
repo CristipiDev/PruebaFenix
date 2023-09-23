@@ -10,5 +10,6 @@ data class LessonInfoUiState(
     val lessonEndTime: String = "",
     val lessonVacancy: Int = 10,
     val id: Int = 0,
-    val dropdownDayNameList: List<String> = emptyList()
+    var dropdownDayNameList: List<String> = emptyList(),
+    val expanded: Boolean = false
 )

@@ -15,6 +15,7 @@ class LessonInfoViewModel @Inject constructor(
 ): ViewModel() {
 
     var state by mutableStateOf(LessonInfoUiState(
+        lessonDay = "LUNES",
         dropdownDayNameList = listOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO")
     ))
 
@@ -41,8 +42,24 @@ class LessonInfoViewModel @Inject constructor(
             is LessonInfoEvent.OnChangeStartTime -> state = state.copy(lessonStartTime = event.startTime)
             is LessonInfoEvent.OnChangeEndTime -> state = state.copy(lessonEndTime = event.endTime)
             is LessonInfoEvent.OnChangeVacancy -> state = state.copy(lessonVacancy = event.vacancy)
+            is LessonInfoEvent.OnClickDropdown -> state = state.copy(expanded = !event.expanded)
             else -> {}
         }
+    }
+
+    fun OnChangeColor(color: Int) { state = state.copy(lessonColor = color) }
+    fun OnChangeDayName(dayName: String) { state = state.copy(lessonDay = dayName) }
+    fun OnChangeName(name: String) { state = state.copy(lessonName = name) }
+    fun OnChangeStartTime(startTime: String) { state = state.copy(lessonStartTime = startTime) }
+    fun OnChangeEndTime(endTime: String) { state = state.copy(lessonEndTime = endTime) }
+    fun OnChangeVacancy(vacancy: Int) { state = state.copy(lessonVacancy = vacancy) }
+
+    fun changeExpandedDropdown(expanded: Boolean) { state = state.copy(expanded = !expanded) }
+    fun onClickItemDropdown(newDayName: String) {
+        state = state.copy(
+            lessonDay = newDayName,
+            expanded = false
+        )
     }
 
 }

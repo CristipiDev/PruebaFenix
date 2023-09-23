@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,15 +14,14 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -30,16 +31,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.pruebafenix.ui.navigation.AppScreens
 
 @Composable
 fun LessonInfoScreen(
     viewModel: LessonInfoViewModel = hiltViewModel(),
     navController: NavController
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    MainBody(
+        state = viewModel.state,
+        navController = navController,
+        viewModel::changeExpandedDropdown,
+        viewModel::onClickItemDropdown)
+}
 
-    Column {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MainBody(
+    state: LessonInfoUiState,
+    navController: NavController,
+    changeExpandedDropdown: (Boolean) -> Unit,
+    onClickItemDropdown:(String) -> Unit
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+    ) {
         Row(modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End)
         {
@@ -50,16 +68,75 @@ fun LessonInfoScreen(
                     tint = MaterialTheme.colorScheme.primary)
             }
         }
-        Text(text = "Dia:",
-            fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.primary)
-        DropdownMenu(expanded = expanded,
-            onDismissRequest = { expanded = false }) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = "Dia:",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.headlineMedium)
 
+            CustomDropdown(
+                state.lessonDay,
+                state.dropdownDayNameList,
+                state.expanded,
+                changeExpandedDropdown,
+                onClickItemDropdown)
         }
+
         ItemLesson("Nombre clase:")
         ItemLesson("Hora de inicio:")
         ItemLesson("Hora fin:")
+    }
+}
+
+@Composable
+private fun CustomDropdown(
+    lessonDay: String,
+    dayNameList: List<String>,
+    expanded: Boolean,
+    changeExpandedDropdown: (Boolean) -> Unit,
+    onClickItemDropdown:(String) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.TopEnd
+    ) {
+
+        IconButton(
+            modifier = Modifier
+                .fillMaxWidth(),
+            onClick = { changeExpandedDropdown(expanded) }) {
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .padding(end = 10.dp)
+            ) {
+                Text(
+                    text = lessonDay,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Box(contentAlignment = Alignment.TopEnd) {
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { changeExpandedDropdown(true) }
+                    ) {
+                        dayNameList.forEach { day ->
+                            DropdownMenuItem(
+                                text = { Text(day) },
+                                onClick = { onClickItemDropdown(day) }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+
+
     }
 }
 
@@ -69,7 +146,7 @@ private fun ItemLesson(
 ) {
     Column (modifier = Modifier
         .fillMaxWidth()
-        .padding(bottom = 10.dp))
+        .padding(bottom = 15.dp))
     {
         Text(text = text,
             fontSize = 20.sp,
@@ -104,5 +181,10 @@ private fun ItemLesson(
 @Composable
 fun Preview() {
     val nav = NavController(LocalContext.current)
-    //LessonInfoScreen(nav)
+    val state = LessonInfoUiState()
+    val dropdownDayNameList = listOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO")
+
+    state.dropdownDayNameList = dropdownDayNameList
+
+    MainBody(state, nav, {}, {})
 }
