@@ -53,8 +53,6 @@ class LessonInfoViewModel @Inject constructor(
             else -> {}
         }
     }
-    fun OnChangeEndTime(endTime: String) { state = state.copy(lessonEndTime = endTime) }
-    fun OnChangeVacancy(vacancy: Int) { state = state.copy(lessonVacancy = vacancy) }
 
     //Dropdown
     fun changeExpandedDropdown(expanded: Boolean) { state = state.copy(expanded = !expanded) }
@@ -103,6 +101,7 @@ class LessonInfoViewModel @Inject constructor(
             lessonEndTime = "$hour:$min"
         )}
 
-
+    //TextField de numero de plazas
+    fun onChangeVacancy(vacancy: String) { state = state.copy(lessonVacancy = vacancy.toInt()) }
 
 }

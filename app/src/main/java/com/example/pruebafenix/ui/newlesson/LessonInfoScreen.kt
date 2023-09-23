@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -88,19 +89,43 @@ fun LessonInfoScreen(
 
         //Columna de nombre de día
         item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(R.string.day_title),
-                    style = MaterialTheme.typography.headlineMedium
-                )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(3f),
+                    contentAlignment = Alignment.CenterStart
+                ) {
 
-                CustomDropdown(
-                    viewModel.state.lessonDay,
-                    viewModel.state.dropdownDayNameList,
-                    viewModel.state.expanded,
-                    viewModel::changeExpandedDropdown,
-                    viewModel::onChangeDayName
+                    VacancyRow(
+                        viewModel.state.lessonVacancy,
+                        viewModel::onChangeVacancy
+                    )
+                }
+                Spacer(
+                    modifier = Modifier
+                        .weight(1f)
                 )
+                Box(modifier = Modifier.weight(3f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(R.string.day_title),
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+
+                        CustomDropdown(
+                            viewModel.state.lessonDay,
+                            viewModel.state.dropdownDayNameList,
+                            viewModel.state.expanded,
+                            viewModel::changeExpandedDropdown,
+                            viewModel::onChangeDayName
+                        )
+                    }
+                }
+
             }
 
             Spacer(
@@ -143,7 +168,8 @@ fun LessonInfoScreen(
                 viewModel.state.lessonStartHourTime,
                 viewModel.state.lessonStartMinTime,
                 viewModel::onChangeStartHourTime,
-                viewModel::onChangeStartMinTime)
+                viewModel::onChangeStartMinTime
+            )
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -157,12 +183,22 @@ fun LessonInfoScreen(
                 viewModel.state.lessonEndHourTime,
                 viewModel.state.lessonEndMinTime,
                 viewModel::onChangeEndHourTime,
-                viewModel::onChangeEndMinTime)
+                viewModel::onChangeEndMinTime
+            )
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(20.dp)
             )
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                CustomButton()
+            }
         }
     }
 }
@@ -173,7 +209,7 @@ private fun CustomDropdown(
     dayNameList: List<String>,
     expanded: Boolean,
     changeExpandedDropdown: (Boolean) -> Unit,
-    onClickItemDropdown:(String) -> Unit
+    onClickItemDropdown: (String) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -224,14 +260,18 @@ private fun ColorsRow(
 ) {
     val partsColorList = colorList.chunked(5)
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = stringResource(R.string.background_color_title),
-            style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = stringResource(R.string.background_color_title),
+            style = MaterialTheme.typography.headlineMedium
+        )
 
-        partsColorList.forEach {partList ->
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
+        partsColorList.forEach { partList ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
 
-                partList.forEach {color ->
+                partList.forEach { color ->
                     if (color == selectedColor) CustomRadioButtonColor(color, true, onChangeColor)
                     else CustomRadioButtonColor(color, false, onChangeColor)
 
@@ -251,15 +291,16 @@ private fun CustomRadioButtonColor(
     var border = BorderStroke(0.dp, colorResource(color))
     if (isSelected) border = BorderStroke(5.dp, MaterialTheme.colorScheme.primary)
 
-    IconButton(onClick = { onChangeColor(color)}) {
+    IconButton(onClick = { onChangeColor(color) }) {
         Card(
             modifier = Modifier.size(40.dp),
             shape = RoundedCornerShape(size = 20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = colorResource(id = color)),
+                containerColor = colorResource(id = color)
+            ),
             border = border
 
-        ){}
+        ) {}
     }
 }
 
@@ -269,17 +310,23 @@ private fun NameRow(
     onChangeName: (String) -> Unit
 ) {
 
-    Column (modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 15.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 15.dp)
+    )
     {
-        Text(text = stringResource(R.string.lesson_name_title),
-            style = MaterialTheme.typography.headlineMedium)
-        CustomBasicTextField(lessonName, onChangeName,
+        Text(
+            text = stringResource(R.string.lesson_name_title),
+            style = MaterialTheme.typography.headlineMedium
+        )
+        CustomBasicTextField(
+            lessonName, onChangeName,
             Modifier
                 .fillMaxWidth()
                 .padding(top = 10.dp),
-            keyboardType = KeyboardType.Text)
+            keyboardType = KeyboardType.Text
+        )
     }
 }
 
@@ -302,11 +349,13 @@ private fun CustomBasicTextField(
         textStyle = MaterialTheme.typography.labelMedium,
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
-            keyboardType = keyboardType),
+            keyboardType = keyboardType
+        ),
         keyboardActions = KeyboardActions(
             onDone = {
                 keyboardController?.hide()
-                focusManager.clearFocus()}),
+                focusManager.clearFocus()
+            }),
         decorationBox = { innerTextField ->
             Row(modifier = Modifier
                 .drawWithContent {
@@ -357,20 +406,68 @@ private fun TimeRow(
                     .padding(end = 10.dp)
             ) {
                 Row {
-                    CustomBasicTextField(startTime,  onChangeHour,
+                    CustomBasicTextField(
+                        startTime, onChangeHour,
                         Modifier
                             .width(40.dp)
                             .padding(end = 5.dp),
-                        keyboardType = KeyboardType.Number)
+                        keyboardType = KeyboardType.Number
+                    )
                     Text(
                         text = ":",
                         style = MaterialTheme.typography.labelMedium
                     )
-                    CustomBasicTextField(endTime,  onChangeMin,
+                    CustomBasicTextField(
+                        endTime, onChangeMin,
                         Modifier
                             .width(40.dp)
                             .padding(start = 5.dp),
-                        keyboardType = KeyboardType.Number)
+                        keyboardType = KeyboardType.Number
+                    )
+                }
+
+            }
+
+        }
+
+    }
+}
+
+@Composable
+private fun VacancyRow(
+    vacancy: Int,
+    onChangeVacancy: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(R.string.vacancy_title),
+            style = MaterialTheme.typography.headlineMedium
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.TopEnd
+        ) {
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier
+                    .padding(end = 10.dp)
+            ) {
+                Row {
+                    CustomBasicTextField(
+                        vacancy.toString(), { onChangeVacancy },
+                        Modifier
+                            .width(40.dp)
+                            .padding(end = 5.dp),
+                        keyboardType = KeyboardType.Number
+                    )
                 }
 
             }
@@ -382,17 +479,40 @@ private fun TimeRow(
 
 @Preview(showBackground = true)
 @Composable
+private fun CustomButton() {
+    TextButton(onClick = { /*TODO*/ }) {
+        Box(
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(size = 5.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp), // inner padding
+        ) {
+            Text(
+                style = MaterialTheme.typography.labelSmall,
+                text = stringResource(R.string.save_button)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
 fun Preview() {
     var state = LessonInfoUiState()
-    val dropdownDayNameList = listOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO")
+    val dropdownDayNameList =
+        listOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO")
 
     state = state.copy(
         lessonColor = R.color.salmon,
         dropdownDayNameList = dropdownDayNameList,
         lessonDay = "LUNES",
-        lessonColorList = listOf(R.color.salmon, R.color.blue, R.color.caramel,
+        lessonColorList = listOf(
+            R.color.salmon, R.color.blue, R.color.caramel,
             R.color.pink, R.color.lilac, R.color.orange, R.color.grey,
-            R.color.purple, R.color.green)
+            R.color.purple, R.color.green
+        )
     )
 
     MainBody(state)
@@ -401,9 +521,11 @@ fun Preview() {
 @Preview(showBackground = true)
 @Composable
 fun radioButtonColorPreview() {
-    val list = listOf(R.color.salmon, R.color.blue, R.color.caramel,
+    val list = listOf(
+        R.color.salmon, R.color.blue, R.color.caramel,
         R.color.pink, R.color.lilac, R.color.orange, R.color.grey,
-        R.color.purple, R.color.green)
+        R.color.purple, R.color.green
+    )
     ColorsRow(R.color.salmon, list, {})
 }
 
@@ -444,19 +566,36 @@ private fun MainBody(
 
         //Columna de nombre de día
         item {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(R.string.day_title),
-                    style = MaterialTheme.typography.headlineMedium
-                )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f),
+                    contentAlignment = Alignment.CenterStart
+                ) {
 
-                CustomDropdown(
-                    state.lessonDay,
-                    state.dropdownDayNameList,
-                    state.expanded,
-                    { },
-                    { }
-                )
+                    VacancyRow(10, {})
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(R.string.day_title),
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+
+                        CustomDropdown(
+                            state.lessonDay,
+                            state.dropdownDayNameList,
+                            state.expanded,
+                            { },
+                            { }
+                        )
+                    }
+                }
+
             }
 
             Spacer(
@@ -519,6 +658,14 @@ private fun MainBody(
                     .fillMaxWidth()
                     .height(20.dp)
             )
+        }
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                CustomButton()
+            }
         }
     }
 }

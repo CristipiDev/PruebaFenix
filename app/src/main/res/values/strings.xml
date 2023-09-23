@@ -7,5 +7,7 @@
     <string name="lesson_name_title">"Nombre de la clase:"</string>
     <string name="start_time_title">"Hora de inicio:"</string>
     <string name="end_time_title">"Hora de fin:"</string>
+    <string name="vacancy_title">"Nº Plazas:"</string>
+    <string name="save_button">"Guardar"</string>
 
 </resources>
