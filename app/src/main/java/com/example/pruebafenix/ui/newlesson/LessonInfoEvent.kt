@@ -8,4 +8,6 @@ sealed class LessonInfoEvent {
     class OnChangeStartTime(val startTime: String): LessonInfoEvent()
     class OnChangeEndTime(val endTime: String): LessonInfoEvent()
     class OnChangeVacancy(val vacancy: Int): LessonInfoEvent()
+
+    class OnClickDropdown(val expanded: Boolean): LessonInfoEvent()
 }
