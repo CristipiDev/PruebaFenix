@@ -7,6 +7,8 @@ data class LessonInfoUiState(
     val lessonStartHourTime: String = "",
     val lessonStartMinTime: String = "",
     val lessonStartTime: String = "",
+    val lessonEndHourTime: String = "",
+    val lessonEndMinTime: String = "",
     val lessonEndTime: String = "",
     val lessonVacancy: Int = 10,
     val id: Int = 0,

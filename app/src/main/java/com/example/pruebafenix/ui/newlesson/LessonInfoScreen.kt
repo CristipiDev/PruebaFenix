@@ -138,10 +138,26 @@ fun LessonInfoScreen(
         }
 
         item {
-            TimeRow(viewModel.state.lessonStartHourTime,
+            TimeRow(
+                stringResource(R.string.start_time_title),
+                viewModel.state.lessonStartHourTime,
                 viewModel.state.lessonStartMinTime,
                 viewModel::onChangeStartHourTime,
                 viewModel::onChangeStartMinTime)
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
+        }
+
+        item {
+            TimeRow(
+                stringResource(R.string.end_time_title),
+                viewModel.state.lessonEndHourTime,
+                viewModel.state.lessonEndMinTime,
+                viewModel::onChangeEndHourTime,
+                viewModel::onChangeEndMinTime)
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -261,8 +277,8 @@ private fun NameRow(
             style = MaterialTheme.typography.headlineMedium)
         CustomBasicTextField(lessonName, onChangeName,
             Modifier
-            .fillMaxWidth()
-            .padding(top = 10.dp),
+                .fillMaxWidth()
+                .padding(top = 10.dp),
             keyboardType = KeyboardType.Text)
     }
 }
@@ -292,8 +308,7 @@ private fun CustomBasicTextField(
                 keyboardController?.hide()
                 focusManager.clearFocus()}),
         decorationBox = { innerTextField ->
-            Row(horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
+            Row(modifier = Modifier
                 .drawWithContent {
                     drawContent()
                     clipRect {
@@ -317,6 +332,7 @@ private fun CustomBasicTextField(
 
 @Composable
 private fun TimeRow(
+    title: String,
     startTime: String,
     endTime: String,
     onChangeHour: (String) -> Unit,
@@ -324,7 +340,7 @@ private fun TimeRow(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
-            text = stringResource(R.string.start_time_title),
+            text = title,
             style = MaterialTheme.typography.headlineMedium
         )
         Box(
@@ -342,14 +358,18 @@ private fun TimeRow(
             ) {
                 Row {
                     CustomBasicTextField(startTime,  onChangeHour,
-                        Modifier.width(40.dp).padding(end = 5.dp),
+                        Modifier
+                            .width(40.dp)
+                            .padding(end = 5.dp),
                         keyboardType = KeyboardType.Number)
                     Text(
                         text = ":",
                         style = MaterialTheme.typography.labelMedium
                     )
                     CustomBasicTextField(endTime,  onChangeMin,
-                        Modifier.width(40.dp).padding(start = 5.dp),
+                        Modifier
+                            .width(40.dp)
+                            .padding(start = 5.dp),
                         keyboardType = KeyboardType.Number)
                 }
 
@@ -375,7 +395,7 @@ fun Preview() {
             R.color.purple, R.color.green)
     )
 
-    MainBody(state, {}, {})
+    MainBody(state)
 }
 
 @Preview(showBackground = true)
@@ -387,53 +407,118 @@ fun radioButtonColorPreview() {
     ColorsRow(R.color.salmon, list, {})
 }
 
-@Preview(showBackground = true)
-@Composable
-fun timeRowPreview() {
-    TimeRow("12", "30", {}, {})
-}
-
 
 @Composable
 private fun MainBody(
-    state: LessonInfoUiState,
-    changeExpandedDropdown: (Boolean) -> Unit,
-    onClickItemDropdown:(String) -> Unit
+    state: LessonInfoUiState
 ) {
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.salmon))
+            .background(colorResource(id = state.lessonColor))
             .padding(10.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End)
-        {
-            IconButton(onClick = {  }) {
-                Icon(
-                    Icons.Filled.Close,
-                    "Close",
-                    tint = MaterialTheme.colorScheme.primary)
+        //Columna con boton de cierre
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            )
+            {
+                IconButton(onClick = { }) {
+                    Icon(
+                        Icons.Filled.Close,
+                        "Close",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Dia:",
-                style = MaterialTheme.typography.headlineMedium)
 
-            CustomDropdown(
-                state.lessonDay,
-                state.dropdownDayNameList,
-                state.expanded,
-                changeExpandedDropdown,
-                onClickItemDropdown)
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
         }
 
-        ColorsRow(
-            state.lessonColor,
-            state.lessonColorList,
-            { })
+        //Columna de nombre de día
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.day_title),
+                    style = MaterialTheme.typography.headlineMedium
+                )
 
-        NameRow("Pole Sport", {})
+                CustomDropdown(
+                    state.lessonDay,
+                    state.dropdownDayNameList,
+                    state.expanded,
+                    { },
+                    { }
+                )
+            }
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
+        }
+
+        //Columna de los colores
+        item {
+            ColorsRow(
+                state.lessonColor,
+                state.lessonColorList,
+                {}
+            )
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+            )
+        }
+
+        //Columna de nombre de la clase
+        item {
+            NameRow(state.lessonName, {})
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
+
+        }
+
+        item {
+            TimeRow(
+                "Inicio",
+                state.lessonStartHourTime,
+                state.lessonStartMinTime,
+                {},
+                {})
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
+        }
+
+        item {
+            TimeRow(
+                "Fin",
+                state.lessonStartHourTime,
+                state.lessonStartMinTime,
+                {},
+                {})
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
+        }
     }
 }

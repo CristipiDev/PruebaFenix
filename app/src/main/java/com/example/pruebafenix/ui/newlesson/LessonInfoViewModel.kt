@@ -71,7 +71,7 @@ class LessonInfoViewModel @Inject constructor(
     //TextField: nombre de clase
     fun onChangeName(name: String) { state = state.copy(lessonName = name)}
 
-    //TextField: horas
+    //TextField de hora de inicio
     fun onChangeStartHourTime(hour: String) {
         //TODO comprobaciones de las horas
         val min = state.lessonStartMinTime
@@ -86,6 +86,23 @@ class LessonInfoViewModel @Inject constructor(
             lessonStartMinTime = min,
             lessonStartTime = "$hour:$min"
         )}
+
+    //TextField de hora de fin
+    fun onChangeEndHourTime(hour: String) {
+        //TODO comprobaciones de las horas
+        val min = state.lessonEndMinTime
+        state = state.copy(
+            lessonEndHourTime = hour,
+            lessonEndTime = "$hour:$min"
+        )
+    }
+    fun onChangeEndMinTime(min: String) {
+        val hour = state.lessonEndHourTime
+        state = state.copy(
+            lessonEndMinTime = min,
+            lessonEndTime = "$hour:$min"
+        )}
+
 
 
 }
