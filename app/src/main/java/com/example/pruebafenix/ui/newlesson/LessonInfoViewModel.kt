@@ -1,6 +1,5 @@
 package com.example.pruebafenix.ui.newlesson
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -54,8 +53,6 @@ class LessonInfoViewModel @Inject constructor(
             else -> {}
         }
     }
-
-    fun OnChangeStartTime(startTime: String) { state = state.copy(lessonStartTime = startTime) }
     fun OnChangeEndTime(endTime: String) { state = state.copy(lessonEndTime = endTime) }
     fun OnChangeVacancy(vacancy: Int) { state = state.copy(lessonVacancy = vacancy) }
 
@@ -73,5 +70,22 @@ class LessonInfoViewModel @Inject constructor(
 
     //TextField: nombre de clase
     fun onChangeName(name: String) { state = state.copy(lessonName = name)}
+
+    //TextField: horas
+    fun onChangeStartHourTime(hour: String) {
+        //TODO comprobaciones de las horas
+        val min = state.lessonStartMinTime
+        state = state.copy(
+            lessonStartHourTime = hour,
+            lessonStartTime = "$hour:$min"
+        )
+    }
+    fun onChangeStartMinTime(min: String) {
+        val hour = state.lessonStartHourTime
+        state = state.copy(
+            lessonStartMinTime = min,
+            lessonStartTime = "$hour:$min"
+        )}
+
 
 }

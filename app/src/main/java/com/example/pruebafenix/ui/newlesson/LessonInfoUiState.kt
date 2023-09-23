@@ -4,6 +4,8 @@ data class LessonInfoUiState(
     val lessonColor: Int = 0,
     val lessonDay: String = "",
     val lessonName: String = "",
+    val lessonStartHourTime: String = "",
+    val lessonStartMinTime: String = "",
     val lessonStartTime: String = "",
     val lessonEndTime: String = "",
     val lessonVacancy: Int = 10,

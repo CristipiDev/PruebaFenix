@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -135,6 +136,18 @@ fun LessonInfoScreen(
             )
 
         }
+
+        item {
+            TimeRow(viewModel.state.lessonStartHourTime,
+                viewModel.state.lessonStartMinTime,
+                viewModel::onChangeStartHourTime,
+                viewModel::onChangeStartMinTime)
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
+        }
     }
 }
 
@@ -203,8 +216,8 @@ private fun ColorsRow(
                 horizontalArrangement = Arrangement.SpaceEvenly) {
 
                 partList.forEach {color ->
-                    if (color == selectedColor) RadioButtonColor(color, true, onChangeColor)
-                    else RadioButtonColor(color, false, onChangeColor)
+                    if (color == selectedColor) CustomRadioButtonColor(color, true, onChangeColor)
+                    else CustomRadioButtonColor(color, false, onChangeColor)
 
                 }
             }
@@ -214,7 +227,7 @@ private fun ColorsRow(
 }
 
 @Composable
-private fun RadioButtonColor(
+private fun CustomRadioButtonColor(
     color: Int,
     isSelected: Boolean,
     onChangeColor: (Int) -> Unit
@@ -234,14 +247,11 @@ private fun RadioButtonColor(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun NameRow(
     lessonName: String,
     onChangeName: (String) -> Unit
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
 
     Column (modifier = Modifier
         .fillMaxWidth()
@@ -249,40 +259,104 @@ private fun NameRow(
     {
         Text(text = stringResource(R.string.lesson_name_title),
             style = MaterialTheme.typography.headlineMedium)
-        BasicTextField(
-            maxLines = 1,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp),
-            value = lessonName,
-            onValueChange = { onChangeName(it) },
-            textStyle = MaterialTheme.typography.labelMedium,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()}),
-            decorationBox = { innerTextField ->
-                Row(modifier = Modifier
-                    .drawWithContent {
-                        drawContent()
-                        clipRect {
-                            val strokeWidth = Stroke.DefaultMiter
-                            val y = size.height
-                            drawLine(
-                                brush = SolidColor(Color(R.color.dark_brown)),
-                                strokeWidth = strokeWidth,
-                                cap = StrokeCap.Square,
-                                start = Offset.Zero.copy(y = y),
-                                end = Offset(x = size.width, y = y)
-                            )
-                        }
+        CustomBasicTextField(lessonName, onChangeName,
+            Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp),
+            keyboardType = KeyboardType.Text)
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun CustomBasicTextField(
+    lessonName: String,
+    onChangeValue: (String) -> Unit,
+    modifier: Modifier,
+    keyboardType: KeyboardType
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    BasicTextField(
+        maxLines = 1,
+        modifier = modifier,
+        value = lessonName,
+        onValueChange = { onChangeValue(it) },
+        textStyle = MaterialTheme.typography.labelMedium,
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = keyboardType),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                keyboardController?.hide()
+                focusManager.clearFocus()}),
+        decorationBox = { innerTextField ->
+            Row(horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                .drawWithContent {
+                    drawContent()
+                    clipRect {
+                        val strokeWidth = Stroke.DefaultMiter
+                        val y = size.height
+                        drawLine(
+                            brush = SolidColor(Color(R.color.dark_brown)),
+                            strokeWidth = strokeWidth,
+                            cap = StrokeCap.Square,
+                            start = Offset.Zero.copy(y = y),
+                            end = Offset(x = size.width, y = y)
+                        )
                     }
-                ) {
-                    innerTextField()
                 }
+            ) {
+                innerTextField()
             }
+        }
+    )
+}
+
+@Composable
+private fun TimeRow(
+    startTime: String,
+    endTime: String,
+    onChangeHour: (String) -> Unit,
+    onChangeMin: (String) -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = stringResource(R.string.start_time_title),
+            style = MaterialTheme.typography.headlineMedium
         )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.TopEnd
+        ) {
+
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 10.dp)
+            ) {
+                Row {
+                    CustomBasicTextField(startTime,  onChangeHour,
+                        Modifier.width(40.dp).padding(end = 5.dp),
+                        keyboardType = KeyboardType.Number)
+                    Text(
+                        text = ":",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                    CustomBasicTextField(endTime,  onChangeMin,
+                        Modifier.width(40.dp).padding(start = 5.dp),
+                        keyboardType = KeyboardType.Number)
+                }
+
+            }
+
+        }
+
     }
 }
 
@@ -312,6 +386,13 @@ fun radioButtonColorPreview() {
         R.color.purple, R.color.green)
     ColorsRow(R.color.salmon, list, {})
 }
+
+@Preview(showBackground = true)
+@Composable
+fun timeRowPreview() {
+    TimeRow("12", "30", {}, {})
+}
+
 
 @Composable
 private fun MainBody(
