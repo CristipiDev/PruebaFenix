@@ -2,6 +2,8 @@
     <string name="app_name">PruebaFenix</string>
 
     //LessonInfoScreen
-    <string name="dayTitle">"Dia:"</string>
+    <string name="day_title">"Dia:"</string>
+    <string name="background_color_title">"Color de fondo:"</string>
+    <string name="lesson_name_title">"Nombre de la clase:"</string>
 
 </resources>

@@ -4,10 +4,10 @@
     <style name="Theme.PruebaFenix" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="datepicker" parent="android:Theme.Material.Light.Dialog">
-        <item name="android:colorAccent">@color/secondary</item>
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:colorControlActivated">@color/secondary</item>
-        <item name="android:colorControlHighlight">@color/secondary</item>
+        <item name="android:colorAccent">@color/dark_brown</item>
+        <item name="android:windowBackground">@color/vanilla</item>
+        <item name="android:colorControlActivated">@color/dark_brown</item>
+        <item name="android:colorControlHighlight">@color/dark_brown</item>
 
         <item name="android:selectableItemBackgroundBorderless">@color/blue</item>
 

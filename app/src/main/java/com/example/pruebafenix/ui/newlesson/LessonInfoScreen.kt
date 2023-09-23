@@ -2,18 +2,23 @@ package com.example.pruebafenix.ui.newlesson
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
@@ -26,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -34,11 +40,13 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.pruebafenix.R
@@ -48,44 +56,85 @@ fun LessonInfoScreen(
     viewModel: LessonInfoViewModel = hiltViewModel(),
     navController: NavController
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = viewModel.state.lessonColor))
             .padding(10.dp)
     ) {
-        //columna con boton de cierre
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End)
-        {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    Icons.Filled.Close,
-                    "Close",
-                    tint = MaterialTheme.colorScheme.primary)
+        //Columna con boton de cierre
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            )
+            {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        Icons.Filled.Close,
+                        "Close",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
         }
 
         //Columna de nombre de día
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = stringResource(R.string.dayTitle),
-                style = MaterialTheme.typography.headlineMedium)
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.day_title),
+                    style = MaterialTheme.typography.headlineMedium
+                )
 
-            CustomDropdown(
-                viewModel.state.lessonDay,
-                viewModel.state.dropdownDayNameList,
-                viewModel.state.expanded,
-                viewModel::changeExpandedDropdown,
-                viewModel::onClickItemDropdown)
+                CustomDropdown(
+                    viewModel.state.lessonDay,
+                    viewModel.state.dropdownDayNameList,
+                    viewModel.state.expanded,
+                    viewModel::changeExpandedDropdown,
+                    viewModel::onChangeDayName
+                )
+            }
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
         }
-        ColorsRow(
-            viewModel.state.lessonColor,
-            viewModel.state.lessonColorList,
-            viewModel::onChangeColor)
 
-        NameRow("Nombre clase:")
-        NameRow("Hora de inicio:")
-        NameRow("Hora fin:")
+        //Columna de los colores
+        item {
+            ColorsRow(
+                viewModel.state.lessonColor,
+                viewModel.state.lessonColorList,
+                viewModel::onChangeColor
+            )
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+            )
+        }
+
+        //Columna de nombre de la clase
+        item {
+            NameRow(viewModel.state.lessonName, viewModel::onChangeName)
+
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
+
+        }
     }
 }
 
@@ -146,7 +195,7 @@ private fun ColorsRow(
 ) {
     val partsColorList = colorList.chunked(5)
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "Color de fondo:",
+        Text(text = stringResource(R.string.background_color_title),
             style = MaterialTheme.typography.headlineMedium)
 
         partsColorList.forEach {partList ->
@@ -185,30 +234,50 @@ private fun RadioButtonColor(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun NameRow(
-    text: String
+    lessonName: String,
+    onChangeName: (String) -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Column (modifier = Modifier
         .fillMaxWidth()
         .padding(bottom = 15.dp))
     {
-        Text(text = text,
+        Text(text = stringResource(R.string.lesson_name_title),
             style = MaterialTheme.typography.headlineMedium)
         BasicTextField(
-            value = "value",
-            onValueChange = { },
+            maxLines = 1,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            value = lessonName,
+            onValueChange = { onChangeName(it) },
             textStyle = MaterialTheme.typography.labelMedium,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()}),
             decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(size = 16.dp)
-                        )
-                        .padding(horizontal = 16.dp, vertical = 12.dp), // inner padding
+                Row(modifier = Modifier
+                    .drawWithContent {
+                        drawContent()
+                        clipRect {
+                            val strokeWidth = Stroke.DefaultMiter
+                            val y = size.height
+                            drawLine(
+                                brush = SolidColor(Color(R.color.dark_brown)),
+                                strokeWidth = strokeWidth,
+                                cap = StrokeCap.Square,
+                                start = Offset.Zero.copy(y = y),
+                                end = Offset(x = size.width, y = y)
+                            )
+                        }
+                    }
                 ) {
                     innerTextField()
                 }
@@ -284,8 +353,6 @@ private fun MainBody(
             state.lessonColorList,
             { })
 
-        NameRow("Nombre clase:")
-        NameRow("Hora de inicio:")
-        NameRow("Hora fin:")
+        NameRow("Pole Sport", {})
     }
 }

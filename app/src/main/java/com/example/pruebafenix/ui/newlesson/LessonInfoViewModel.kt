@@ -1,5 +1,6 @@
 package com.example.pruebafenix.ui.newlesson
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -54,16 +55,13 @@ class LessonInfoViewModel @Inject constructor(
         }
     }
 
-    fun OnChangeColor(color: Int) { state = state.copy(lessonColor = color) }
-    fun OnChangeDayName(dayName: String) { state = state.copy(lessonDay = dayName) }
-    fun OnChangeName(name: String) { state = state.copy(lessonName = name) }
     fun OnChangeStartTime(startTime: String) { state = state.copy(lessonStartTime = startTime) }
     fun OnChangeEndTime(endTime: String) { state = state.copy(lessonEndTime = endTime) }
     fun OnChangeVacancy(vacancy: Int) { state = state.copy(lessonVacancy = vacancy) }
 
     //Dropdown
     fun changeExpandedDropdown(expanded: Boolean) { state = state.copy(expanded = !expanded) }
-    fun onClickItemDropdown(newDayName: String) {
+    fun onChangeDayName(newDayName: String) {
         state = state.copy(
             lessonDay = newDayName,
             expanded = false
@@ -72,5 +70,8 @@ class LessonInfoViewModel @Inject constructor(
 
     //RadioButton color
     fun onChangeColor(newColor: Int) { state = state.copy(lessonColor = newColor) }
+
+    //TextField: nombre de clase
+    fun onChangeName(name: String) { state = state.copy(lessonName = name)}
 
 }
