@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -56,8 +57,13 @@ import com.example.pruebafenix.R
 @Composable
 fun LessonInfoScreen(
     viewModel: LessonInfoViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
+    lessonId: Int? = null
 ) {
+    LaunchedEffect(true) {
+        viewModel.getLessonFromId(lessonId)
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -481,7 +487,6 @@ private fun VacancyRow(
 private fun CustomButton(
     addNewLesson: () -> Unit,
     navController: NavController
-
 ) {
     TextButton(onClick = {
         addNewLesson()

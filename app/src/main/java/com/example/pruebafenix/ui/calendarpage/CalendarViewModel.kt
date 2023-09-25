@@ -31,7 +31,7 @@ class CalendarViewModel @Inject constructor(
     private val getDayLessonListUseCase: GetDayLessonListUseCase,
     private val setNewLessonUseCase: SetNewLessonUseCase
 ) : ViewModel() {
-    private val currentLessons = LessonsProvider()
+    //private val currentLessons = LessonsProvider()
     private var currentMorningLessonsList: List<LessonModel> = emptyList()
     private var currentNoonLessonsList: List<LessonModel> = emptyList()
 
@@ -81,13 +81,13 @@ class CalendarViewModel @Inject constructor(
         return lessonList
     }
 
-    private suspend fun setLessonListProvider(dayName: String) {
+    /*private suspend fun setLessonListProvider(dayName: String) {
         val listCurrentLessons = currentLessons.getLessonsForDay(dayName)
 
         setNewLessonUseCase.lessonToAdd(listCurrentLessons[0])
         setNewLessonUseCase.invoke()
 
-    }
+    }*/
 
     private fun getMorningNoonLessonList(listCurrentLessons: List<LessonModel>): List<List<LessonModel>> {
         val morningNoonLessonList: ArrayList<ArrayList<LessonModel>> = ArrayList()

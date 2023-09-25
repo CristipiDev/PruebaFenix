@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pruebafenix.R
 import com.example.pruebafenix.domain.model.LessonModel
+import com.example.pruebafenix.domain.usecase.GetLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LessonInfoViewModel @Inject constructor(
-    private val setNewLessonUseCase: SetNewLessonUseCase
+    private val setNewLessonUseCase: SetNewLessonUseCase,
+    private val getLessonFromIdUseCase: GetLessonFromIdUseCase
 ): ViewModel() {
 
     var state by mutableStateOf(LessonInfoUiState(
@@ -42,6 +44,30 @@ class LessonInfoViewModel @Inject constructor(
             setNewLessonUseCase.lessonToAdd(newLesson)
             setNewLessonUseCase.invoke()
         }
+    }
+
+    fun getLessonFromId(lessonId: Int?) {
+        lessonId?.let {
+            viewModelScope.launch {
+                getLessonFromIdUseCase.setLessonId(lessonId)
+                val selectedLesson =  getLessonFromIdUseCase.invoke()
+
+                state = state.copy(
+                    lessonColor = selectedLesson.lessonColor,
+                    lessonDay = selectedLesson.lessonDay,
+                    lessonName = selectedLesson.lessonName,
+                    lessonStartHourTime = splitTime(selectedLesson.lessonStartTime)[0],
+                    lessonStartMinTime = splitTime(selectedLesson.lessonStartTime)[1],
+                    lessonStartTime = selectedLesson.lessonStartTime,
+                    lessonEndHourTime = splitTime(selectedLesson.lessonEndTime)[0],
+                    lessonEndMinTime = splitTime(selectedLesson.lessonEndTime)[1],
+                    lessonEndTime = selectedLesson.lessonEndTime,
+                    lessonVacancy = selectedLesson.lessonVacancy,
+                    id = selectedLesson.id
+                )
+            }
+        }
+
     }
 
     fun onEvent(event: LessonInfoEvent) {
@@ -107,4 +133,7 @@ class LessonInfoViewModel @Inject constructor(
     //TextField de numero de plazas
     fun onChangeVacancy(vacancy: String) { state = state.copy(lessonVacancy = vacancy.toInt()) }
 
+    private fun splitTime(time: String): List<String> {
+        return time.split(":")
+    }
 }

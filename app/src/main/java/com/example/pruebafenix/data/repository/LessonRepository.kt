@@ -14,6 +14,8 @@ interface LessonRepository {
     suspend fun setNewLessonInDb(newLesson: LessonModel)
     suspend fun getAllLessonsFromDb(): ArrayList<LessonModel>
 
+    suspend fun getLessonFromId(lessonId: Int): LessonModel
+
 }
 
 class LessonRepositoryImpl @Inject constructor(
@@ -28,10 +30,9 @@ class LessonRepositoryImpl @Inject constructor(
             newLesson.lessonName,
             newLesson.lessonStartTime,
             newLesson.lessonEndTime,
-            newLesson.lessonVacancy
+            newLesson.lessonVacancy,
+            newLesson.id
         ))
-
-        Log.d("idDeLesson", id.toString())
     }
 
     override suspend fun getAllLessonsFromDb(): ArrayList<LessonModel> {
@@ -54,4 +55,16 @@ class LessonRepositoryImpl @Inject constructor(
         return lessonList
     }
 
+    override suspend fun getLessonFromId(lessonId: Int): LessonModel {
+        val lessonEntity = lessonDao.getLesson(lessonId = lessonId)
+        return LessonModel(
+            lessonEntity.lessonColor,
+            lessonEntity.lessonDay,
+            lessonEntity.lessonName,
+            lessonEntity.lessonStartTime,
+            lessonEntity.lessonEndTime,
+            lessonEntity.lessonVacancy,
+            lessonEntity.id
+        )
+    }
 }

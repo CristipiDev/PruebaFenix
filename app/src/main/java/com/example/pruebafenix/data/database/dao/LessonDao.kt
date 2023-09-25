@@ -19,6 +19,6 @@ interface LessonDao {
     @Query("DELETE FROM LESSON WHERE id = :lessonId")
     fun deleteLesson(lessonId: Int)
 
-    @Query("DELETE FROM LESSON WHERE id = :lessonId")
-    fun getLesson(lessonId: Int)
+    @Query("SELECT * FROM LESSON WHERE id = :lessonId")
+    fun getLesson(lessonId: Int): LessonEntity
 }
