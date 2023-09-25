@@ -14,5 +14,6 @@ data class LessonInfoUiState(
     val id: Int = 0,
     val dropdownDayNameList: List<String> = emptyList(),
     val expanded: Boolean = false,
-    val lessonColorList: List<Int> = emptyList()
+    val lessonColorList: List<Int> = emptyList(),
+    val isUpdateDeleteLesson: Boolean = false
 )

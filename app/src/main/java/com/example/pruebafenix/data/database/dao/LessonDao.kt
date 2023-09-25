@@ -16,9 +16,10 @@ interface LessonDao {
     @Query("SELECT * FROM lesson ORDER BY id DESC")
     fun getAllLessons(): List<LessonEntity>
 
+    @Query("SELECT * FROM LESSON WHERE id = :lessonId")
+    fun getLesson(lessonId: Int): LessonEntity
+
     @Query("DELETE FROM LESSON WHERE id = :lessonId")
     fun deleteLesson(lessonId: Int)
 
-    @Query("SELECT * FROM LESSON WHERE id = :lessonId")
-    fun getLesson(lessonId: Int): LessonEntity
 }

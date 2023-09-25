@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pruebafenix.R
 import com.example.pruebafenix.domain.model.LessonModel
+import com.example.pruebafenix.domain.usecase.DeleteLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.GetLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LessonInfoViewModel @Inject constructor(
     private val setNewLessonUseCase: SetNewLessonUseCase,
-    private val getLessonFromIdUseCase: GetLessonFromIdUseCase
+    private val getLessonFromIdUseCase: GetLessonFromIdUseCase,
+    private val deleteLessonFromIdUseCase: DeleteLessonFromIdUseCase
 ): ViewModel() {
 
     var state by mutableStateOf(LessonInfoUiState(
@@ -63,11 +65,18 @@ class LessonInfoViewModel @Inject constructor(
                     lessonEndMinTime = splitTime(selectedLesson.lessonEndTime)[1],
                     lessonEndTime = selectedLesson.lessonEndTime,
                     lessonVacancy = selectedLesson.lessonVacancy,
-                    id = selectedLesson.id
+                    id = selectedLesson.id,
+                    isUpdateDeleteLesson = true
                 )
             }
         }
+    }
 
+    fun deleteLessonFromId(lessonId: Int) {
+        viewModelScope.launch {
+            deleteLessonFromIdUseCase.setLessonId(lessonId)
+            deleteLessonFromIdUseCase.invoke()
+        }
     }
 
     fun onEvent(event: LessonInfoEvent) {

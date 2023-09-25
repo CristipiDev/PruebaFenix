@@ -13,8 +13,8 @@ import javax.inject.Inject
 interface LessonRepository {
     suspend fun setNewLessonInDb(newLesson: LessonModel)
     suspend fun getAllLessonsFromDb(): ArrayList<LessonModel>
-
     suspend fun getLessonFromId(lessonId: Int): LessonModel
+    suspend fun deleteLessonFromId(lessonId: Int)
 
 }
 
@@ -66,5 +66,9 @@ class LessonRepositoryImpl @Inject constructor(
             lessonEntity.lessonVacancy,
             lessonEntity.id
         )
+    }
+
+    override suspend fun deleteLessonFromId(lessonId: Int) {
+        lessonDao.deleteLesson(lessonId)
     }
 }

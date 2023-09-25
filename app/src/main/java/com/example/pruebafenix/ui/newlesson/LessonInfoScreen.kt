@@ -2,6 +2,7 @@ package com.example.pruebafenix.ui.newlesson
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,10 +49,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.pruebafenix.R
 
 @Composable
@@ -93,7 +96,7 @@ fun LessonInfoScreen(
             )
         }
 
-        //Columna de nombre de día
+        //Columna de plazas y nombre de día
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -168,6 +171,7 @@ fun LessonInfoScreen(
 
         }
 
+        //Row hora inicio
         item {
             TimeRow(
                 stringResource(R.string.start_time_title),
@@ -183,6 +187,7 @@ fun LessonInfoScreen(
             )
         }
 
+        //Row Hora fin
         item {
             TimeRow(
                 stringResource(R.string.end_time_title),
@@ -198,12 +203,44 @@ fun LessonInfoScreen(
             )
         }
 
+        //Row de botones
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                CustomButton ({ viewModel.setNewLessonInDb() }, navController)
+                Box(modifier = Modifier.weight(1f)) {
+                    if (viewModel.state.isUpdateDeleteLesson) {
+                        CustomButton(
+                            text = stringResource(R.string.delete_button),
+                            onClickButton = { viewModel.deleteLessonFromId(viewModel.state.id) },
+                            navController,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(
+                                    1.dp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(size = 5.dp)
+                                )
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    CustomButton(
+                        text = stringResource(R.string.save_button),
+                        { viewModel.setNewLessonInDb() },
+                        navController,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        MaterialTheme.colorScheme.onPrimary)
+                }
             }
         }
     }
@@ -485,23 +522,26 @@ private fun VacancyRow(
 
 @Composable
 private fun CustomButton(
-    addNewLesson: () -> Unit,
-    navController: NavController
+    text: String,
+    onClickButton: () -> Unit,
+    navController: NavController,
+    modifier: Modifier,
+    colorText: Color
 ) {
-    TextButton(onClick = {
-        addNewLesson()
-        navController.popBackStack()}) {
+    TextButton(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {
+            onClickButton()
+            navController.popBackStack()}) {
         Box(
-            modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(size = 5.dp)
-                )
-                .padding(horizontal = 16.dp, vertical = 12.dp), // inner padding
+            modifier = modifier,
+            contentAlignment = Alignment.Center
         ) {
             Text(
+                textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelSmall,
-                text = stringResource(R.string.save_button)
+                color = colorText,
+                text = text
             )
         }
     }
@@ -513,6 +553,7 @@ fun Preview() {
     var state = LessonInfoUiState()
     val dropdownDayNameList =
         listOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO")
+    val navController = rememberNavController()
 
     state = state.copy(
         lessonColor = R.color.salmon,
@@ -525,7 +566,7 @@ fun Preview() {
         )
     )
 
-    MainBody(state)
+    MainBody(state, navController)
 }
 
 @Preview(showBackground = true)
@@ -542,7 +583,8 @@ fun radioButtonColorPreview() {
 
 @Composable
 private fun MainBody(
-    state: LessonInfoUiState
+    state: LessonInfoUiState,
+    navController: NavController
 ) {
 
     LazyColumn(
@@ -675,6 +717,42 @@ private fun MainBody(
                 horizontalArrangement = Arrangement.End
             ) {
                 //CustomButton({})
+            }
+        }
+
+        //Row de botones
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+                    CustomButton(
+                        text = stringResource(R.string.delete_button),
+                        onClickButton = { /*TODO*/ }, navController,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                1.dp,
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 12.dp), // inner padding
+                        MaterialTheme.colorScheme.primary)
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    CustomButton(
+                        text = stringResource(R.string.save_button),
+                        { }, navController,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = RoundedCornerShape(size = 5.dp)
+                            )
+                            .padding(horizontal = 16.dp, vertical = 12.dp), // inner padding
+                        MaterialTheme.colorScheme.onPrimary)
+                }
             }
         }
     }
