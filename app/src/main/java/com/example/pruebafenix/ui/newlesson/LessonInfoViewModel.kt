@@ -25,7 +25,6 @@ class LessonInfoViewModel @Inject constructor(
         lessonColorList = listOf(R.color.salmon, R.color.blue, R.color.caramel,
                R.color.pink, R.color.lilac, R.color.orange, R.color.grey,
                R.color.purple, R.color.green)
-
     ))
 
     fun setNewLessonInDb(){

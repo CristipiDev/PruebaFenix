@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +52,10 @@ fun CalendarScreen(
     viewModel: CalendarViewModel = hiltViewModel(),
     navController: NavController
 ) {
+    LaunchedEffect(true) {
+        viewModel.updateStateFromLocalDate(viewModel.state.selectedDate)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -79,7 +84,7 @@ fun CalendarScreen(
             item {
                 DayMenu(
                     viewModel.state,
-                    viewModel::getDate)
+                    viewModel::updateStateFromLocalDate)
 
                 Divider(
                     color = MaterialTheme.colorScheme.background,
