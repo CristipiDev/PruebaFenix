@@ -15,6 +15,7 @@ interface LessonRepository {
     suspend fun getAllLessonsFromDb(): ArrayList<LessonModel>
     suspend fun getLessonFromId(lessonId: Int): LessonModel
     suspend fun deleteLessonFromId(lessonId: Int)
+    suspend fun updateLesson(lesson: LessonModel)
 
 }
 
@@ -71,4 +72,19 @@ class LessonRepositoryImpl @Inject constructor(
     override suspend fun deleteLessonFromId(lessonId: Int) {
         lessonDao.deleteLesson(lessonId)
     }
+
+    override suspend fun updateLesson(lesson: LessonModel) {
+        val lessonEntity = LessonEntity(
+            lesson.lessonColor,
+            lesson.lessonDay,
+            lesson.lessonName,
+            lesson.lessonStartTime,
+            lesson.lessonEndTime,
+            lesson.lessonVacancy,
+            lesson.id
+        )
+        lessonDao.updateLesson(lessonEntity)
+    }
+
+
 }

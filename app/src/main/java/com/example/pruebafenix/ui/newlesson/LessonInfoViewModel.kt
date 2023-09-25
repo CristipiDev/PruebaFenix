@@ -1,8 +1,10 @@
 package com.example.pruebafenix.ui.newlesson
 
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pruebafenix.R
@@ -10,6 +12,9 @@ import com.example.pruebafenix.domain.model.LessonModel
 import com.example.pruebafenix.domain.usecase.DeleteLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.GetLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
+import com.example.pruebafenix.domain.usecase.UpdateLessonUseCase
+import com.example.pruebafenix.ui.utils.CheckDataUtils
+import com.example.pruebafenix.ui.utils.CheckDataUtils.fromLessonIuStateToLessonModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,7 +23,8 @@ import javax.inject.Inject
 class LessonInfoViewModel @Inject constructor(
     private val setNewLessonUseCase: SetNewLessonUseCase,
     private val getLessonFromIdUseCase: GetLessonFromIdUseCase,
-    private val deleteLessonFromIdUseCase: DeleteLessonFromIdUseCase
+    private val deleteLessonFromIdUseCase: DeleteLessonFromIdUseCase,
+    private val updateLessonUseCase: UpdateLessonUseCase
 ): ViewModel() {
 
     var state by mutableStateOf(LessonInfoUiState(
@@ -33,19 +39,11 @@ class LessonInfoViewModel @Inject constructor(
 
     fun setNewLessonInDb(){
         viewModelScope.launch {
-            val newLesson = LessonModel(
-                state.lessonColor,
-                state.lessonDay,
-                state.lessonName,
-                state.lessonStartTime,
-                state.lessonEndTime,
-                state.lessonVacancy,
-                state.id
-            )
-
-            setNewLessonUseCase.lessonToAdd(newLesson)
-            setNewLessonUseCase.invoke()
+                val newLesson = fromLessonIuStateToLessonModel(state)
+                setNewLessonUseCase.lessonToAdd(newLesson)
+                setNewLessonUseCase.invoke()
         }
+
     }
 
     fun getLessonFromId(lessonId: Int?) {
@@ -79,18 +77,15 @@ class LessonInfoViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: LessonInfoEvent) {
-        when(event) {
-            is LessonInfoEvent.OnChangeColor ->  state = state.copy(lessonColor = event.color)
-            is LessonInfoEvent.OnChangeDayName -> state = state.copy(lessonDay = event.dayName)
-            is LessonInfoEvent.OnChangeName -> state = state.copy(lessonName = event.name)
-            is LessonInfoEvent.OnChangeStartTime -> state = state.copy(lessonStartTime = event.startTime)
-            is LessonInfoEvent.OnChangeEndTime -> state = state.copy(lessonEndTime = event.endTime)
-            is LessonInfoEvent.OnChangeVacancy -> state = state.copy(lessonVacancy = event.vacancy)
-            is LessonInfoEvent.OnClickDropdown -> state = state.copy(expanded = !event.expanded)
-            else -> {}
+    fun updateLesson(lesson: LessonInfoUiState) {
+        viewModelScope.launch {
+            val lessonModel = CheckDataUtils.fromLessonIuStateToLessonModel(lesson)
+            updateLessonUseCase.setLesson(lessonModel)
+            updateLessonUseCase.invoke()
         }
     }
+
+
 
     //Dropdown
     fun changeExpandedDropdown(expanded: Boolean) { state = state.copy(expanded = !expanded) }
@@ -140,7 +135,11 @@ class LessonInfoViewModel @Inject constructor(
         )}
 
     //TextField de numero de plazas
-    fun onChangeVacancy(vacancy: String) { state = state.copy(lessonVacancy = vacancy.toInt()) }
+    fun onChangeVacancy(vacancy: Int) {
+        state = state.copy(
+            lessonVacancy = vacancy
+        )
+    }
 
     private fun splitTime(time: String): List<String> {
         return time.split(":")

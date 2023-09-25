@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.pruebafenix.data.database.entity.LessonEntity
 
 @Dao
@@ -21,5 +22,8 @@ interface LessonDao {
 
     @Query("DELETE FROM LESSON WHERE id = :lessonId")
     fun deleteLesson(lessonId: Int)
+
+    @Update
+    fun updateLesson(lesson: LessonEntity)
 
 }
