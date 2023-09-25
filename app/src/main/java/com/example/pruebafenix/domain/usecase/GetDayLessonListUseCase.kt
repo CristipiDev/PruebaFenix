@@ -6,23 +6,15 @@ import com.example.pruebafenix.data.repository.LessonRepository
 import com.example.pruebafenix.domain.model.LessonModel
 import javax.inject.Inject
 
-class GetDayLessonsUseCase @Inject constructor(
+class GetDayLessonListUseCase @Inject constructor(
     private val lessonRepository: LessonRepository
 ) {
 
     private lateinit var dayName: String
-    suspend operator fun invoke(): LiveData<ArrayList<LessonModel>>{
+    suspend operator fun invoke(): ArrayList<LessonModel>{
         val listAllLessons = lessonRepository.getAllLessonsFromDb()
-        val listMutableDayLessons = MutableLiveData<ArrayList<LessonModel>>()
-        var listDayLesons = ArrayList<LessonModel>()
 
-        listAllLessons.value?.let {
-            listDayLesons = getLessonsForDay(it)
-        }
-
-        listMutableDayLessons.postValue(listDayLesons)
-
-        return listMutableDayLessons
+        return getLessonsForDay(listAllLessons)
     }
 
     fun setDayName(dayName: String) { this.dayName = dayName }

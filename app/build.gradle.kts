@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
 
     //HILT
+    kotlin("kapt")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
 }
@@ -14,13 +15,19 @@ android {
     defaultConfig {
         applicationId = "com.example.pruebafenix"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
         }
     }
 

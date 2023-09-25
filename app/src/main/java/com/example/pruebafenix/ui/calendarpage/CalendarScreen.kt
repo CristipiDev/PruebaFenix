@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.pruebafenix.ui.navigation.AppScreens
 import com.example.pruebafenix.ui.theme.PruebaFenixTheme
@@ -47,9 +49,13 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
-    viewModel: CalendarViewModel,
+    viewModel: CalendarViewModel = hiltViewModel(),
     navController: NavController
 ) {
+    LaunchedEffect(true) {
+        viewModel.updateStateFromLocalDate(viewModel.state.selectedDate)
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,7 +84,7 @@ fun CalendarScreen(
             item {
                 DayMenu(
                     viewModel.state,
-                    viewModel::getDate)
+                    viewModel::updateStateFromLocalDate)
 
                 Divider(
                     color = MaterialTheme.colorScheme.background,
@@ -238,9 +244,9 @@ fun LessonBox(
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    val viewModel = CalendarViewModel()
+    //val viewModel = CalendarViewModel()
     val nav = NavController(LocalContext.current)
     PruebaFenixTheme {
-        CalendarScreen(viewModel, nav)
+       // CalendarScreen(viewModel, nav)
     }
 }
