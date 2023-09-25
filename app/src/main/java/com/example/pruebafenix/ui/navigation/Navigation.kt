@@ -6,9 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pruebafenix.ui.newlesson.NewLessonScreen
+import com.example.pruebafenix.data.repository.LessonRepository
+import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
 import com.example.pruebafenix.ui.calendarpage.CalendarScreen
 import com.example.pruebafenix.ui.calendarpage.CalendarViewModel
+import com.example.pruebafenix.ui.newlesson.LessonInfoScreen
+import com.example.pruebafenix.ui.newlesson.LessonInfoViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 
@@ -25,8 +28,8 @@ fun Navigation() {
                     navController = navController
                 )
             }
-            composable(AppScreens.NewLessonScreen.route) {
-                NewLessonScreen(navController= navController)
+            composable(AppScreens.LessonInfoScreen.route) {
+                LessonInfoScreen(navController= navController)
             }
         })
 }

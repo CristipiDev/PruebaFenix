@@ -20,7 +20,7 @@
     <color name="green">#BACA9F</color>
 
 
-    <color name="background">#FFFFEFE1</color>
-    <color name="secondary">#FF756354</color>
+    <color name="vanilla">#FFFFEFE1</color>
+    <color name="dark_brown">#FF756354</color>
 
 </resources>
