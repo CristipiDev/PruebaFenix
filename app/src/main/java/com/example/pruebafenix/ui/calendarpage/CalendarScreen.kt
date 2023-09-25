@@ -33,6 +33,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.pruebafenix.ui.navigation.AppScreens
 import com.example.pruebafenix.ui.theme.PruebaFenixTheme
@@ -47,7 +48,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
-    viewModel: CalendarViewModel,
+    viewModel: CalendarViewModel = hiltViewModel(),
     navController: NavController
 ) {
     Scaffold(
@@ -238,9 +239,9 @@ fun LessonBox(
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    val viewModel = CalendarViewModel()
+    //val viewModel = CalendarViewModel()
     val nav = NavController(LocalContext.current)
     PruebaFenixTheme {
-        CalendarScreen(viewModel, nav)
+       // CalendarScreen(viewModel, nav)
     }
 }

@@ -1,5 +1,6 @@
 package com.example.pruebafenix.data.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.pruebafenix.data.database.dao.LessonDao
@@ -11,7 +12,7 @@ import javax.inject.Inject
 
 interface LessonRepository {
     suspend fun setNewLessonInDb(newLesson: LessonModel)
-    suspend fun getAllLessonsFromDb(): MutableLiveData<ArrayList<LessonModel>>
+    suspend fun getAllLessonsFromDb(): ArrayList<LessonModel>
 
 }
 
@@ -19,45 +20,38 @@ class LessonRepositoryImpl @Inject constructor(
     private val lessonDao: LessonDao
 ): LessonRepository  {
     override suspend fun setNewLessonInDb(newLesson: LessonModel) {
-        withContext(Dispatchers.IO){
-            lessonDao.insertNewLesson(LessonEntity(
-                newLesson.lessonColor,
-                newLesson.lessonDay,
-                newLesson.lessonName,
-                newLesson.lessonStartTime,
-                newLesson.lessonEndTime,
-                newLesson.lessonVacancy
-            ))
-        }
+        var id: Long = 0
+
+        id = lessonDao.insertNewLesson(LessonEntity(
+            newLesson.lessonColor,
+            newLesson.lessonDay,
+            newLesson.lessonName,
+            newLesson.lessonStartTime,
+            newLesson.lessonEndTime,
+            newLesson.lessonVacancy
+        ))
+
+        Log.d("idDeLesson", id.toString())
     }
 
-    override suspend fun getAllLessonsFromDb(): MutableLiveData<ArrayList<LessonModel>> {
-        val lessonMutableList = MutableLiveData<ArrayList<LessonModel>>()
+    override suspend fun getAllLessonsFromDb(): ArrayList<LessonModel> {
+        val listEntity = lessonDao.getAllLessons()
+        val lessonList = ArrayList<LessonModel>()
 
-        withContext(Dispatchers.IO) {
-            val listEntity = lessonDao.getAllLessons().value
-
-            lessonMutableList.value = ArrayList<LessonModel>()
-            val lessonList = ArrayList<LessonModel>()
-
-            listEntity?.let {
-                it.forEach{ lessonEntity ->
-                    lessonList.add(
-                        LessonModel(
-                        lessonEntity.lessonColor,
-                        lessonEntity.lessonDay,
-                        lessonEntity.lessonName,
-                        lessonEntity.lessonStartTime,
-                        lessonEntity.lessonEndTime,
-                        lessonEntity.lessonVacancy,
-                        lessonEntity.id
-                    )
-                    )
-                }
-            }
-            lessonMutableList.postValue(lessonList)
+        listEntity.forEach{ lessonEntity ->
+            lessonList.add(
+                LessonModel(
+                    lessonEntity.lessonColor,
+                    lessonEntity.lessonDay,
+                    lessonEntity.lessonName,
+                    lessonEntity.lessonStartTime,
+                    lessonEntity.lessonEndTime,
+                    lessonEntity.lessonVacancy,
+                    lessonEntity.id
+                )
+            )
         }
-        return lessonMutableList
+        return lessonList
     }
 
 }

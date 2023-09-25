@@ -21,9 +21,12 @@ class DataSourceModule {
     @Singleton
     @Provides
     fun dbDataSource(@ApplicationContext context: Context): DbDataSource {
-        return Room.databaseBuilder(context, DbDataSource::class.java, "lesson_database")
+        val db = Room.databaseBuilder(context, DbDataSource::class.java, "lesson_database")
             .fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
             .build()
+        db.openHelper.writableDatabase
+        return db
     }
 
     @Singleton

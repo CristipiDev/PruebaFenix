@@ -197,7 +197,7 @@ fun LessonInfoScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                CustomButton()
+                CustomButton ({ viewModel.setNewLessonInDb() }, navController)
             }
         }
     }
@@ -477,10 +477,15 @@ private fun VacancyRow(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun CustomButton() {
-    TextButton(onClick = { /*TODO*/ }) {
+private fun CustomButton(
+    addNewLesson: () -> Unit,
+    navController: NavController
+
+) {
+    TextButton(onClick = {
+        addNewLesson()
+        navController.popBackStack()}) {
         Box(
             modifier = Modifier
                 .background(
@@ -664,7 +669,7 @@ private fun MainBody(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                CustomButton()
+                //CustomButton({})
             }
         }
     }

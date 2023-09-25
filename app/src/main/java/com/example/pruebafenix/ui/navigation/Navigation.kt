@@ -18,15 +18,11 @@ import com.example.pruebafenix.ui.newlesson.LessonInfoViewModel
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    val viewModel = CalendarViewModel()
     NavHost(
         navController = navController,
         startDestination = AppScreens.CalendarScreen.route, builder = {
             composable(AppScreens.CalendarScreen.route) {
-                CalendarScreen(
-                    viewModel = viewModel,
-                    navController = navController
-                )
+                CalendarScreen(navController = navController)
             }
             composable(AppScreens.LessonInfoScreen.route) {
                 LessonInfoScreen(navController= navController)

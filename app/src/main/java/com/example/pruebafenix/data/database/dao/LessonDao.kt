@@ -11,11 +11,14 @@ import com.example.pruebafenix.data.database.entity.LessonEntity
 @Dao
 interface LessonDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertNewLesson(lesson: LessonEntity)
+    fun insertNewLesson(lesson: LessonEntity): Long
 
     @Query("SELECT * FROM lesson ORDER BY id DESC")
-    fun getAllLessons(): LiveData<List<LessonEntity>>
+    fun getAllLessons(): List<LessonEntity>
 
     @Query("DELETE FROM LESSON WHERE id = :lessonId")
     fun deleteLesson(lessonId: Int)
+
+    @Query("DELETE FROM LESSON WHERE id = :lessonId")
+    fun getLesson(lessonId: Int)
 }

@@ -4,10 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.pruebafenix.R
 import com.example.pruebafenix.domain.model.LessonModel
 import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,19 +28,21 @@ class LessonInfoViewModel @Inject constructor(
 
     ))
 
-    suspend fun setNewLessonInDb(state: LessonInfoUiState){
-        val newLesson = LessonModel(
-            state.lessonColor,
-            state.lessonDay,
-            state.lessonName,
-            state.lessonStartTime,
-            state.lessonEndTime,
-            state.lessonVacancy,
-            state.id
-        )
+    fun setNewLessonInDb(){
+        viewModelScope.launch {
+            val newLesson = LessonModel(
+                state.lessonColor,
+                state.lessonDay,
+                state.lessonName,
+                state.lessonStartTime,
+                state.lessonEndTime,
+                state.lessonVacancy,
+                state.id
+            )
 
-        setNewLessonUseCase.lessonToAdd(newLesson)
-        setNewLessonUseCase.invoke()
+            setNewLessonUseCase.lessonToAdd(newLesson)
+            setNewLessonUseCase.invoke()
+        }
     }
 
     fun onEvent(event: LessonInfoEvent) {
