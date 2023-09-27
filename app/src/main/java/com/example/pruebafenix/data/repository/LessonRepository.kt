@@ -1,13 +1,11 @@
 package com.example.pruebafenix.data.repository
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.pruebafenix.data.database.dao.LessonDao
 import com.example.pruebafenix.data.database.entity.LessonEntity
+import com.example.pruebafenix.data.database.entity.LessonWithStudentsEntity
 import com.example.pruebafenix.domain.model.LessonModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.pruebafenix.domain.model.LessonWithStudentsModel
+import com.example.pruebafenix.domain.model.StudentModel
 import javax.inject.Inject
 
 interface LessonRepository {
@@ -16,6 +14,8 @@ interface LessonRepository {
     suspend fun getLessonFromId(lessonId: Int): LessonModel
     suspend fun deleteLessonFromId(lessonId: Int)
     suspend fun updateLesson(lesson: LessonModel)
+
+    suspend fun getLessonWithStudentsFromId(lessonId: Int): LessonWithStudentsModel
 
 }
 
@@ -84,6 +84,33 @@ class LessonRepositoryImpl @Inject constructor(
             lesson.id
         )
         lessonDao.updateLesson(lessonEntity)
+    }
+
+    override suspend fun getLessonWithStudentsFromId(lessonId: Int): LessonWithStudentsModel {
+        val lessonWithStudents = lessonDao.getLessonWithStudents(lessonId)
+
+        val lesson = LessonModel(
+            lessonWithStudents.lesson.lessonColor,
+            lessonWithStudents.lesson.lessonDay,
+            lessonWithStudents.lesson.lessonName,
+            lessonWithStudents.lesson.lessonStartTime,
+            lessonWithStudents.lesson.lessonEndTime,
+            lessonWithStudents.lesson.lessonVacancy,
+            lessonWithStudents.lesson.id
+        )
+
+        val studentList: ArrayList<StudentModel> = ArrayList()
+        lessonWithStudents.students.forEach {studentEntity ->
+            studentList.add(StudentModel(
+                studentName = studentEntity.studentName,
+                studentId = studentEntity.studentId
+            ))
+        }
+
+        return LessonWithStudentsModel(
+            lesson = lesson,
+            studentList = studentList
+        )
     }
 
 

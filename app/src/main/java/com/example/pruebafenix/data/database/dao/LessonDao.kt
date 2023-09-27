@@ -1,13 +1,13 @@
 package com.example.pruebafenix.data.database.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.pruebafenix.data.database.entity.LessonEntity
+import com.example.pruebafenix.data.database.entity.LessonWithStudentsEntity
 
 @Dao
 interface LessonDao {
@@ -25,5 +25,9 @@ interface LessonDao {
 
     @Update
     fun updateLesson(lesson: LessonEntity)
+
+    @Transaction
+    @Query("SELECT * FROM lesson WHERE id = :lessonId")
+    fun getLessonWithStudents(lessonId: Int): LessonWithStudentsEntity
 
 }
