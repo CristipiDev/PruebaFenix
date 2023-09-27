@@ -107,7 +107,7 @@ fun LessonInfoScreen(
             )
         }
 
-        //Columna de plazas y nombre de día
+        //Columna de nombre de día
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -240,6 +240,7 @@ fun LessonInfoScreen(
                             if (errorString.isEmpty()) {
                                 if (viewModel.state.isUpdateDeleteLesson) {
                                     viewModel.updateLesson()
+                                    navController.popBackStack()
                                 }else {
                                     viewModel.setNewLessonInDb()
                                     navController.popBackStack()

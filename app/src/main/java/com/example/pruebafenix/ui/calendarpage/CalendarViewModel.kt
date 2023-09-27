@@ -28,8 +28,7 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val getDayLessonListUseCase: GetDayLessonListUseCase,
-    private val setNewLessonUseCase: SetNewLessonUseCase
+    private val getDayLessonListUseCase: GetDayLessonListUseCase
 ) : ViewModel() {
     //private val currentLessons = LessonsProvider()
     private var currentMorningLessonsList: List<LessonModel> = emptyList()
@@ -76,8 +75,6 @@ class CalendarViewModel @Inject constructor(
                 }
             }
         }
-
-
         return lessonList
     }
 

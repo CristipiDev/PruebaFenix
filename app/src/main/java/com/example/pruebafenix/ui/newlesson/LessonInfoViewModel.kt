@@ -49,6 +49,17 @@ class LessonInfoViewModel @Inject constructor(
         }
 
     }
+    fun updateLesson() {
+        viewModelScope.launch {
+            state = state.copy(
+                lessonStartTime = "${state.lessonStartHourTime}:${state.lessonStartMinTime}",
+                lessonEndTime = "${state.lessonEndHourTime}:${state.lessonEndMinTime}"
+            )
+            val lessonModel = fromLessonIuStateToLessonModel(state)
+            updateLessonUseCase.setLesson(lessonModel)
+            updateLessonUseCase.invoke()
+        }
+    }
 
     fun getLessonFromId(lessonId: Int?) {
         lessonId?.let {
@@ -81,18 +92,6 @@ class LessonInfoViewModel @Inject constructor(
         }
     }
 
-    fun updateLesson() {
-        viewModelScope.launch {
-            state = state.copy(
-                lessonStartTime = "${state.lessonStartHourTime}:${state.lessonStartMinTime}",
-                lessonEndTime = "${state.lessonEndHourTime}:${state.lessonEndMinTime}"
-            )
-            val lessonModel = fromLessonIuStateToLessonModel(state)
-            updateLessonUseCase.setLesson(lessonModel)
-            updateLessonUseCase.invoke()
-        }
-    }
-
     fun checkErrorData(context: Context): String {
         var errorString = CheckDataUtils.isEmptyDataState(state, context)
         if (errorString.isEmpty()) errorString = CheckDataUtils.checkStartHourEndHour(state, context)
@@ -120,25 +119,35 @@ class LessonInfoViewModel @Inject constructor(
 
     //TextField de hora de inicio
     fun onChangeStartHourTime(hour: String) {
-        state = state.copy(
-            lessonStartHourTime = hour
-        )
+        if (hour.length < 3) {
+            state = state.copy(
+                lessonStartHourTime = hour
+            )
+        }
     }
     fun onChangeStartMinTime(min: String) {
-        state = state.copy(
-            lessonStartMinTime = min
-        )}
+        if (min.length < 3) {
+            state = state.copy(
+                lessonStartMinTime = min
+            )
+        }
+    }
 
     //TextField de hora de fin
     fun onChangeEndHourTime(hour: String) {
-        state = state.copy(
-            lessonEndHourTime = hour
-        )
+        if (hour.length < 3) {
+            state = state.copy(
+                lessonEndHourTime = hour
+            )
+        }
     }
     fun onChangeEndMinTime(min: String) {
-        state = state.copy(
-            lessonEndMinTime = min
-        )}
+        if (min.length < 3) {
+            state = state.copy(
+                lessonEndMinTime = min
+            )
+        }
+    }
 
     //TextField de numero de plazas
     fun onChangeVacancy(vacancy: Int) {
@@ -146,6 +155,5 @@ class LessonInfoViewModel @Inject constructor(
             lessonVacancy = vacancy
         )
     }
-
 
 }
