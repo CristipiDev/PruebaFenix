@@ -1,6 +1,6 @@
 package com.example.pruebafenix.ui.newlesson
 
-import android.widget.Toast
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,13 +8,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pruebafenix.R
-import com.example.pruebafenix.domain.model.LessonModel
 import com.example.pruebafenix.domain.usecase.DeleteLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.GetLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
 import com.example.pruebafenix.domain.usecase.UpdateLessonUseCase
 import com.example.pruebafenix.ui.utils.CheckDataUtils
 import com.example.pruebafenix.ui.utils.CheckDataUtils.fromLessonIuStateToLessonModel
+import com.example.pruebafenix.ui.utils.CheckDataUtils.splitTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,6 +39,10 @@ class LessonInfoViewModel @Inject constructor(
 
     fun setNewLessonInDb(){
         viewModelScope.launch {
+            state = state.copy(
+                lessonStartTime = "${state.lessonStartHourTime}:${state.lessonStartMinTime}",
+                lessonEndTime = "${state.lessonEndHourTime}:${state.lessonEndMinTime}"
+            )
                 val newLesson = fromLessonIuStateToLessonModel(state)
                 setNewLessonUseCase.lessonToAdd(newLesson)
                 setNewLessonUseCase.invoke()
@@ -77,16 +81,28 @@ class LessonInfoViewModel @Inject constructor(
         }
     }
 
-    fun updateLesson(lesson: LessonInfoUiState) {
+    fun updateLesson() {
         viewModelScope.launch {
-            val lessonModel = CheckDataUtils.fromLessonIuStateToLessonModel(lesson)
+            state = state.copy(
+                lessonStartTime = "${state.lessonStartHourTime}:${state.lessonStartMinTime}",
+                lessonEndTime = "${state.lessonEndHourTime}:${state.lessonEndMinTime}"
+            )
+            val lessonModel = fromLessonIuStateToLessonModel(state)
             updateLessonUseCase.setLesson(lessonModel)
             updateLessonUseCase.invoke()
         }
     }
 
+    fun checkErrorData(context: Context): String {
+        var errorString = CheckDataUtils.isEmptyDataState(state, context)
+        if (errorString.isEmpty()) errorString = CheckDataUtils.checkStartHourEndHour(state, context)
+        return errorString
+    }
 
 
+
+
+    //EVENTOS
     //Dropdown
     fun changeExpandedDropdown(expanded: Boolean) { state = state.copy(expanded = !expanded) }
     fun onChangeDayName(newDayName: String) {
@@ -104,34 +120,24 @@ class LessonInfoViewModel @Inject constructor(
 
     //TextField de hora de inicio
     fun onChangeStartHourTime(hour: String) {
-        //TODO comprobaciones de las horas
-        val min = state.lessonStartMinTime
         state = state.copy(
-            lessonStartHourTime = hour,
-            lessonStartTime = "$hour:$min"
+            lessonStartHourTime = hour
         )
     }
     fun onChangeStartMinTime(min: String) {
-        val hour = state.lessonStartHourTime
         state = state.copy(
-            lessonStartMinTime = min,
-            lessonStartTime = "$hour:$min"
+            lessonStartMinTime = min
         )}
 
     //TextField de hora de fin
     fun onChangeEndHourTime(hour: String) {
-        //TODO comprobaciones de las horas
-        val min = state.lessonEndMinTime
         state = state.copy(
-            lessonEndHourTime = hour,
-            lessonEndTime = "$hour:$min"
+            lessonEndHourTime = hour
         )
     }
     fun onChangeEndMinTime(min: String) {
-        val hour = state.lessonEndHourTime
         state = state.copy(
-            lessonEndMinTime = min,
-            lessonEndTime = "$hour:$min"
+            lessonEndMinTime = min
         )}
 
     //TextField de numero de plazas
@@ -141,7 +147,5 @@ class LessonInfoViewModel @Inject constructor(
         )
     }
 
-    private fun splitTime(time: String): List<String> {
-        return time.split(":")
-    }
+
 }

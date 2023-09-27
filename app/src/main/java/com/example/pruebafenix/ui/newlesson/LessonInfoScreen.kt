@@ -236,16 +236,15 @@ fun LessonInfoScreen(
                     CustomButton(
                         text = stringResource(R.string.save_button),
                         {
-                            if (!CheckDataUtils.isEmptyDataState(viewModel.state)) {
+                            val errorString = viewModel.checkErrorData(context)
+                            if (errorString.isEmpty()) {
                                 if (viewModel.state.isUpdateDeleteLesson) {
-                                    viewModel.updateLesson(viewModel.state)
+                                    viewModel.updateLesson()
                                 }else {
                                     viewModel.setNewLessonInDb()
                                     navController.popBackStack()
                                 }
-                            } else {
-                                Toast.makeText(context,
-                                "Debes tener todos los datos rellenados", Toast.LENGTH_LONG).show()}
+                            } else { Toast.makeText(context, errorString, Toast.LENGTH_LONG).show()}
                         },
                         modifier = Modifier
                             .fillMaxWidth()

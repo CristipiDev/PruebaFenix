@@ -11,4 +11,29 @@
     <string name="delete_button">"Borrar"</string>
     <string name="save_button">"Guardar"</string>
 
+    //ERRORES EN LOS DATOS
+    //Datos vacios
+    <string name="empty_name">"El campo de nombre no puede estar vacio."</string>
+    <string name="empty_start_hour">"El campo de hora de inicio no puede estar vacio."</string>
+    <string name="empty_start_min">"El campo de minutos de inicio no puede estar vacio."</string>
+    <string name="empty_end_hour">"El campo de hora de fin no puede estar vacio."</string>
+    <string name="empty_end_min">"El campo de minutos de fin no puede estar vacio."</string>
+
+    //Check horas son Int
+    <string name="check_start_hour_int">"La hora de inicio debe ser un número."</string>
+    <string name="check_start_min_int">"Los minutos de inicio debe ser un número."</string>
+    <string name="check_end_hour_int">"La hora de fin debe ser un número."</string>
+    <string name="check_end_min_int">"Los minutos de fin debe ser un número."</string>
+
+    //Check horas rango
+    <string name="check_start_hour_range">"La hora de inicio tiene que estar entre 0 y 24."</string>
+    <string name="check_start_min_range">"Los minutos de inicio tienen que estar entre 0 y 59."</string>
+    <string name="check_end_hour_range">"La hora de fin tiene que estar entre 0 y 24."</string>
+    <string name="check_end_min_range">"Los minutos de fin tienen que estar entre 0 y 59."</string>
+
+    //Check horas inicio vs. fin incorrecta
+    <string name="check_start_bigger_than_end">"La hora de inicio no puede ser posterior a la hora de fin."</string>
+    <string name="check_start_equal_than_end">"la hora de inicio no puede ser igual a la hora de fin."</string>
+
+
 </resources>
