@@ -33,7 +33,12 @@
 
     //Check horas inicio vs. fin incorrecta
     <string name="check_start_bigger_than_end">"La hora de inicio no puede ser posterior a la hora de fin."</string>
-    <string name="check_start_equal_than_end">"la hora de inicio no puede ser igual a la hora de fin."</string>
+    <string name="check_start_equal_than_end">"La hora de inicio no puede ser igual a la hora de fin."</string>
+
+    //ALUMNOS
+    <string name="lesson_student_list">"Alumnas de esta clase:"</string>
+    <string name="add_new_student">"Agrega un nuevo alumno"</string>
+
 
 
 </resources>
