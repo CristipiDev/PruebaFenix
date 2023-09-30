@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pruebafenix.R
@@ -13,6 +12,8 @@ import com.example.pruebafenix.domain.usecase.DeleteLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.GetLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.GetLessonWithStudentsFromIdUseCase
 import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
+import com.example.pruebafenix.domain.usecase.SetNewStudentIntoLessonFromIdUseCase
+import com.example.pruebafenix.domain.usecase.SetNewStudentUseCase
 import com.example.pruebafenix.domain.usecase.UpdateLessonUseCase
 import com.example.pruebafenix.ui.utils.CheckDataUtils
 import com.example.pruebafenix.ui.utils.CheckDataUtils.fromLessonIuStateToLessonModel
@@ -24,10 +25,11 @@ import javax.inject.Inject
 @HiltViewModel
 class LessonInfoViewModel @Inject constructor(
     private val setNewLessonUseCase: SetNewLessonUseCase,
-    private val getLessonFromIdUseCase: GetLessonFromIdUseCase,
     private val deleteLessonFromIdUseCase: DeleteLessonFromIdUseCase,
     private val updateLessonUseCase: UpdateLessonUseCase,
-    private val getLessonWithStudentsFromIdUseCase: GetLessonWithStudentsFromIdUseCase
+    private val getLessonWithStudentsFromIdUseCase: GetLessonWithStudentsFromIdUseCase,
+    private val setNewStudentUseCase: SetNewStudentUseCase,
+    private val setNewStudentIntoLessonFromIdUseCase: SetNewStudentIntoLessonFromIdUseCase
 ): ViewModel() {
 
     var state by mutableStateOf(LessonInfoUiState(
@@ -64,7 +66,7 @@ class LessonInfoViewModel @Inject constructor(
         }
     }
 
-    fun getLessonFromId(lessonId: Int?) {
+    fun getLessonFromId(lessonId: Long?) {
         lessonId?.let {
             viewModelScope.launch {
                 getLessonWithStudentsFromIdUseCase.setLessonId(lessonId)
@@ -96,16 +98,35 @@ class LessonInfoViewModel @Inject constructor(
         }
     }
 
+    fun setStudentIntoLessonFromId(studentName: String, lessonId: Long) {
+        val student = StudentModel(studentName, 0)
+        var studentId: Long = -1
+
+        viewModelScope.launch {
+            setNewStudentUseCase.setStudent(student)
+            studentId = setNewStudentUseCase.invoke()
+
+            if(studentId >= 0 ) {
+                //TODO actualizar el numero de plazas disponibles
+
+                //onChangeVacancy(state.lessonVacancy - 1)
+                //updateLesson()
+
+                setNewStudentIntoLessonFromIdUseCase.setLessonId(lessonId)
+                setNewStudentIntoLessonFromIdUseCase.setStudentId(studentId)
+
+                setNewStudentIntoLessonFromIdUseCase.invoke()
+            }
+        }
+    }
+
     fun checkErrorData(context: Context): String {
         var errorString = CheckDataUtils.isEmptyDataState(state, context)
         if (errorString.isEmpty()) errorString = CheckDataUtils.checkStartHourEndHour(state, context)
         return errorString
     }
 
-    fun addStudentToLesson(studentName: String) {
-
-    }
-
+    //TODO sacar los eventos del viewModel
     //EVENTOS
     //Dropdown
     fun changeExpandedDropdown(expanded: Boolean) { state = state.copy(expanded = !expanded) }
@@ -170,13 +191,6 @@ class LessonInfoViewModel @Inject constructor(
     fun onChangeDialogTextField(value: String){
         state = state.copy(
             studentName = value
-        )
-    }
-    fun setNewStudent(){
-        val newStudentList = ArrayList<StudentModel>()
-        newStudentList.add(StudentModel(state.studentName, 0))
-        state = state.copy(
-            studentList = newStudentList
         )
     }
 

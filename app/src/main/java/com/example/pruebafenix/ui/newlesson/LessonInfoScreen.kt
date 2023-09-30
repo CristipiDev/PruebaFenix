@@ -25,8 +25,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,13 +49,14 @@ import com.example.pruebafenix.domain.model.StudentModel
 import com.example.pruebafenix.ui.common.CustomBasicTextFieldComponent
 import com.example.pruebafenix.ui.common.CustomDialogComponent
 import com.example.pruebafenix.ui.common.CustomButtonComponent
+import com.example.pruebafenix.ui.common.CustomDropdownComponent
 
 
 @Composable
 fun LessonInfoScreen(
     viewModel: LessonInfoViewModel = hiltViewModel(),
     navController: NavController,
-    lessonId: Int? = null
+    lessonId: Long? = null
 ) {
 
     val context = LocalContext.current
@@ -67,10 +66,15 @@ fun LessonInfoScreen(
     }
 
     if(viewModel.state.showDialog)
-        CustomDialogComponent(
-            value = viewModel.state.studentName,
-            setShowDialog = { viewModel.setValueShowDialog(it) },
-            setValue = viewModel::onChangeDialogTextField)
+        lessonId?.let {
+            CustomDialogComponent(
+                value = viewModel.state.studentName,
+                setShowDialog = { viewModel.setValueShowDialog(it) },
+                setValue = viewModel::onChangeDialogTextField,
+                lessonId = it,
+                viewModel::setStudentIntoLessonFromId
+            )
+        }
 
     LazyColumn(
         modifier = Modifier
@@ -78,7 +82,7 @@ fun LessonInfoScreen(
             .background(colorResource(id = viewModel.state.lessonColor))
             .padding(10.dp)
     ) {
-        //Columna con boton de cierre
+        //Fila del boton de cierre
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -101,7 +105,7 @@ fun LessonInfoScreen(
             )
         }
 
-        //Columna de nombre de día
+        //Fila de nombre de día
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -113,7 +117,7 @@ fun LessonInfoScreen(
                         style = MaterialTheme.typography.headlineMedium
                     )
 
-                    CustomDropdown(
+                    CustomDropdownComponent(
                         viewModel.state.lessonDay,
                         viewModel.state.dropdownDayNameList,
                         viewModel.state.expanded,
@@ -130,7 +134,7 @@ fun LessonInfoScreen(
             )
         }
 
-        //Columna de los colores
+        //Fila de los colores
         item {
             ColorsRow(
                 viewModel.state.lessonColor,
@@ -145,7 +149,7 @@ fun LessonInfoScreen(
             )
         }
 
-        //Columna de nombre de la clase
+        //Fila de nombre de la clase
         item {
             NameRow(viewModel.state.lessonName, viewModel::onChangeName)
 
@@ -157,7 +161,7 @@ fun LessonInfoScreen(
 
         }
 
-        //Row hora inicio
+        //Fila hora inicio
         item {
             TimeRow(
                 stringResource(R.string.start_time_title),
@@ -173,7 +177,7 @@ fun LessonInfoScreen(
             )
         }
 
-        //Row Hora fin
+        //Fila Hora fin
         item {
             TimeRow(
                 stringResource(R.string.end_time_title),
@@ -189,7 +193,7 @@ fun LessonInfoScreen(
             )
         }
 
-        //Colum de Vacancy
+        //Fila de Vacancy
         item {
             VacancyRow(
                 viewModel.state.lessonVacancy,
@@ -200,9 +204,12 @@ fun LessonInfoScreen(
                         .height(20.dp)
                     )
         }
-        
+
+        //Fila de añadir estudiante
         item {
-            AddStudentsContent(viewModel.state.studentList, viewModel::setValueShowDialog)
+            if(viewModel.state.isUpdateDeleteLesson) {
+                AddStudentsContent(viewModel.state.studentList, viewModel::setValueShowDialog)
+            }
         }
 
         //Row de botones
@@ -259,54 +266,7 @@ fun LessonInfoScreen(
     }
 }
 
-@Composable
-private fun CustomDropdown(
-    lessonDay: String,
-    dayNameList: List<String>,
-    expanded: Boolean,
-    changeExpandedDropdown: (Boolean) -> Unit,
-    onClickItemDropdown: (String) -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth(),
-        contentAlignment = Alignment.TopEnd
-    ) {
 
-        IconButton(
-            modifier = Modifier
-                .fillMaxWidth(),
-            onClick = { changeExpandedDropdown(expanded) }) {
-
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .padding(end = 10.dp)
-            ) {
-                Text(
-                    text = lessonDay,
-                    style = MaterialTheme.typography.labelMedium
-                )
-                Box(contentAlignment = Alignment.TopEnd) {
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { changeExpandedDropdown(true) }
-                    ) {
-                        dayNameList.forEach { day ->
-                            DropdownMenuItem(
-                                text = { Text(day) },
-                                onClick = { onClickItemDropdown(day) }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun ColorsRow(

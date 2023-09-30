@@ -29,9 +29,9 @@ fun Navigation() {
             composable(route = AppScreens.LessonInfoScreen.route + "?lessonId={id}",
                 arguments = listOf(
                     navArgument("id" , {
-                        type = NavType.IntType}))
+                        type = NavType.LongType}))
             ) {backStackEntry ->
-                val id: Int? = backStackEntry.arguments?.getInt("id")
+                val id: Long? = backStackEntry.arguments?.getLong("id")
 
                 LessonInfoScreen(navController= navController,
                     lessonId = id)

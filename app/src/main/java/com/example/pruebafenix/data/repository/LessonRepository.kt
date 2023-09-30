@@ -15,7 +15,7 @@ interface LessonRepository {
     suspend fun deleteLessonFromId(lessonId: Int)
     suspend fun updateLesson(lesson: LessonModel)
 
-    suspend fun getLessonWithStudentsFromId(lessonId: Int): LessonWithStudentsModel
+    suspend fun getLessonWithStudentsFromId(lessonId: Long): LessonWithStudentsModel
 
 }
 
@@ -86,7 +86,7 @@ class LessonRepositoryImpl @Inject constructor(
         lessonDao.updateLesson(lessonEntity)
     }
 
-    override suspend fun getLessonWithStudentsFromId(lessonId: Int): LessonWithStudentsModel {
+    override suspend fun getLessonWithStudentsFromId(lessonId: Long): LessonWithStudentsModel {
         val lessonWithStudents = lessonDao.getLessonWithStudents(lessonId)
 
         val lesson = LessonModel(

@@ -7,10 +7,10 @@ import javax.inject.Inject
 class GetLessonWithStudentsFromIdUseCase @Inject constructor(
     private val lessonRepository: LessonRepository
 ) {
-    private var lessonId: Int = 0
+    private var lessonId: Long = 0
     suspend operator fun invoke(): LessonWithStudentsModel {
         return lessonRepository.getLessonWithStudentsFromId(lessonId = lessonId)
     }
 
-    fun setLessonId(lessonId: Int) { this.lessonId = lessonId }
+    fun setLessonId(lessonId: Long) { this.lessonId = lessonId }
 }

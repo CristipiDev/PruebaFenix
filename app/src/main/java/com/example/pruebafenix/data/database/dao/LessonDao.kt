@@ -7,7 +7,9 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.pruebafenix.data.database.entity.LessonEntity
+import com.example.pruebafenix.data.database.entity.LessonStudentCrossRefEntity
 import com.example.pruebafenix.data.database.entity.LessonWithStudentsEntity
+import com.example.pruebafenix.data.database.entity.StudentEntity
 
 @Dao
 interface LessonDao {
@@ -26,8 +28,14 @@ interface LessonDao {
     @Update
     fun updateLesson(lesson: LessonEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertNewStudent(student: StudentEntity): Long
+
     @Transaction
     @Query("SELECT * FROM lesson WHERE id = :lessonId")
-    fun getLessonWithStudents(lessonId: Int): LessonWithStudentsEntity
+    fun getLessonWithStudents(lessonId: Long): LessonWithStudentsEntity
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertLessonWithStudents(join: LessonStudentCrossRefEntity)
 
 }

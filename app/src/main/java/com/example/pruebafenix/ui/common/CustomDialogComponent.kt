@@ -48,11 +48,10 @@ import androidx.compose.ui.window.Dialog
 fun CustomDialogComponent (
     value: String,
     setShowDialog: (Boolean) -> Unit,
-    setValue: (String) -> Unit)
-{
-
-    val txtFieldError = remember { mutableStateOf("") }
-    val txtField = remember { mutableStateOf(value) }
+    setValue: (String) -> Unit,
+    lessonId: Long,
+    setIntoDb: (String, Long) -> Unit
+){
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
@@ -98,7 +97,9 @@ fun CustomDialogComponent (
 
                     CustomButtonComponent(
                         text = stringResource(com.example.pruebafenix.R.string.save_button),
-                        {//TODO evento de guardado en la BBDD
+                        {
+                            setIntoDb(value, lessonId)
+                            setShowDialog(false)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -117,5 +118,5 @@ fun CustomDialogComponent (
 @Preview(showBackground = true)
 @Composable
 fun PreviewDialog() {
-    CustomDialogComponent("Hola mundo", {}, {})
+    //CustomDialogComponent("Hola mundo", {}, {}, 0, {})
 }
