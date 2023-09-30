@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -492,7 +493,6 @@ private fun AddStudentsContent(
 
         Box(modifier = Modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 20.dp)
             .border(
                 1.dp,
                 MaterialTheme.colorScheme.primary,
@@ -504,7 +504,7 @@ private fun AddStudentsContent(
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight()
-                        .padding(10.dp),
+                        .padding(horizontal = 10.dp),
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(modifier = Modifier
                             .weight(4f),
@@ -517,6 +517,13 @@ private fun AddStudentsContent(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
+                    }
+                    if (studentList[studentList.size-1].studentId != student.studentId) {
+                        Divider(
+                            color = MaterialTheme.colorScheme.primary,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(horizontal = 10.dp)
+                        )
                     }
 
                 }
@@ -541,7 +548,8 @@ fun radioButtonColorPreview() {
 @Composable
 fun addStudentRowPreview() {
     val list: List<StudentModel> = listOf(StudentModel("nombre1", 0))
+    val event: (Long, Long) -> Unit = (fun(x: Long, y: Long) { println(x) })
     Column(modifier = Modifier.height(100.dp)) {
-        //AddStudentsContent(list, {}, {}, 0)
+        AddStudentsContent(list, {}, event, 0)
     }
 }
