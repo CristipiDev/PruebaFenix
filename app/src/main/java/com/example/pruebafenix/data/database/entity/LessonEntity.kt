@@ -12,5 +12,5 @@ data class LessonEntity(
     @ColumnInfo(name = "lessonStartTime") val lessonStartTime: String,
     @ColumnInfo(name = "lessonEndTime") val lessonEndTime: String,
     @ColumnInfo(name = "lessonVacancy") val lessonVacancy: Int,
-    @PrimaryKey(autoGenerate = true) var id: Int = 0
+    @PrimaryKey(autoGenerate = true) var id: Long = 0
 )

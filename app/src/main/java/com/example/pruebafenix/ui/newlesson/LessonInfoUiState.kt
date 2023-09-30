@@ -13,7 +13,7 @@ data class LessonInfoUiState(
     val lessonEndMinTime: String = "",
     val lessonEndTime: String = "",
     val lessonVacancy: Int = 10,
-    val id: Int = 0,
+    val id: Long = -1,
     val dropdownDayNameList: List<String> = emptyList(),
     val expanded: Boolean = false,
     val lessonColorList: List<Int> = emptyList(),

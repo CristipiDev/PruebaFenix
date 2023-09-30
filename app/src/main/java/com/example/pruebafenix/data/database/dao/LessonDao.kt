@@ -19,11 +19,11 @@ interface LessonDao {
     @Query("SELECT * FROM lesson ORDER BY id DESC")
     fun getAllLessons(): List<LessonEntity>
 
-    @Query("SELECT * FROM LESSON WHERE id = :lessonId")
-    fun getLesson(lessonId: Int): LessonEntity
+    @Query("SELECT * FROM lesson WHERE id = :lessonId")
+    fun getLesson(lessonId: Long): LessonEntity
 
-    @Query("DELETE FROM LESSON WHERE id = :lessonId")
-    fun deleteLesson(lessonId: Int)
+    @Query("DELETE FROM lesson WHERE id = :lessonId")
+    fun deleteLesson(lessonId: Long)
 
     @Update
     fun updateLesson(lesson: LessonEntity)
@@ -37,5 +37,8 @@ interface LessonDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertLessonWithStudents(join: LessonStudentCrossRefEntity)
+
+    @Query("DELETE FROM student WHERE studentId = :studentId")
+    fun deleteStudent(studentId: Long)
 
 }

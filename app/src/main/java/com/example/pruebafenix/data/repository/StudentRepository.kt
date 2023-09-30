@@ -11,6 +11,8 @@ interface StudentRepository {
     suspend fun setNewStudent(newStudent: StudentModel): Long
 
     suspend fun setNewStudentIntoLessonFromId(lessonId: Long, studentId: Long)
+
+    suspend fun deleteStudentFromId(studentId: Long)
 }
 class StudentRepositoryImpl @Inject constructor(
     private val lessonDao: LessonDao
@@ -28,5 +30,9 @@ class StudentRepositoryImpl @Inject constructor(
         val lessonStudentCrossRefEntity = LessonStudentCrossRefEntity(lessonId, studentId)
 
         lessonDao.insertLessonWithStudents(lessonStudentCrossRefEntity)
+    }
+
+    override suspend fun deleteStudentFromId(studentId: Long) {
+        lessonDao.deleteStudent(studentId)
     }
 }

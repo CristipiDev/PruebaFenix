@@ -211,7 +211,7 @@ fun LessonBox(
     startTime: String,
     endTime: String,
     availablePlaces: Int,
-    id: Int,
+    id: Long,
     navController: NavController
 ) {
     Divider(

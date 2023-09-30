@@ -8,10 +8,10 @@ import kotlin.properties.Delegates
 class GetLessonFromIdUseCase @Inject constructor(
     private val lessonRepository: LessonRepository
 ) {
-    private var lessonId: Int = 0
+    private var lessonId: Long = -1
     suspend operator fun invoke(): LessonModel{
         return lessonRepository.getLessonFromId(lessonId = lessonId)
     }
 
-    fun setLessonId(lessonId: Int) { this.lessonId = lessonId }
+    fun setLessonId(lessonId: Long) { this.lessonId = lessonId }
 }

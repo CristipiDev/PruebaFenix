@@ -38,6 +38,7 @@
     //ALUMNOS
     <string name="lesson_student_list">"Alumnas de esta clase:"</string>
     <string name="add_new_student">"Agrega un nuevo alumno"</string>
+    <string name="delete_new_student">"Borra un alumno"</string>
 
 
 

@@ -11,8 +11,8 @@ import javax.inject.Inject
 interface LessonRepository {
     suspend fun setNewLessonInDb(newLesson: LessonModel)
     suspend fun getAllLessonsFromDb(): ArrayList<LessonModel>
-    suspend fun getLessonFromId(lessonId: Int): LessonModel
-    suspend fun deleteLessonFromId(lessonId: Int)
+    suspend fun getLessonFromId(lessonId: Long): LessonModel
+    suspend fun deleteLessonFromId(lessonId: Long)
     suspend fun updateLesson(lesson: LessonModel)
 
     suspend fun getLessonWithStudentsFromId(lessonId: Long): LessonWithStudentsModel
@@ -31,8 +31,7 @@ class LessonRepositoryImpl @Inject constructor(
             newLesson.lessonName,
             newLesson.lessonStartTime,
             newLesson.lessonEndTime,
-            newLesson.lessonVacancy,
-            newLesson.id
+            newLesson.lessonVacancy
         ))
     }
 
@@ -56,7 +55,7 @@ class LessonRepositoryImpl @Inject constructor(
         return lessonList
     }
 
-    override suspend fun getLessonFromId(lessonId: Int): LessonModel {
+    override suspend fun getLessonFromId(lessonId: Long): LessonModel {
         val lessonEntity = lessonDao.getLesson(lessonId = lessonId)
         return LessonModel(
             lessonEntity.lessonColor,
@@ -69,7 +68,7 @@ class LessonRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun deleteLessonFromId(lessonId: Int) {
+    override suspend fun deleteLessonFromId(lessonId: Long) {
         lessonDao.deleteLesson(lessonId)
     }
 

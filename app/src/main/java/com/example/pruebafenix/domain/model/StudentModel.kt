@@ -2,5 +2,5 @@ package com.example.pruebafenix.domain.model
 
 data class StudentModel(
     val studentName: String,
-    val studentId: Int
+    val studentId: Long
 )

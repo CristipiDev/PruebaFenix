@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -75,7 +76,7 @@ fun LessonInfoScreen(
                 viewModel::setStudentIntoLessonFromId
             )
         }
-
+    //TODO arreglar la screen, funciones más pequeñas
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -208,7 +209,12 @@ fun LessonInfoScreen(
         //Fila de añadir estudiante
         item {
             if(viewModel.state.isUpdateDeleteLesson) {
-                AddStudentsContent(viewModel.state.studentList, viewModel::setValueShowDialog)
+                if (lessonId != null) {
+                    AddStudentsContent(viewModel.state.studentList,
+                        viewModel::setValueShowDialog,
+                        viewModel::deleteStudentFromId,
+                        lessonId)
+                }
             }
         }
 
@@ -449,7 +455,9 @@ private fun VacancyRow(
 @Composable
 private fun AddStudentsContent(
     studentList: List<StudentModel>,
-    onClickAddStudent: (Boolean) -> Unit
+    onClickAddStudent: (Boolean) -> Unit,
+    onClickDeleteStudent: (Long, Long) -> Unit,
+    lessonId: Long
 ){
     Column {
         Row(modifier = Modifier
@@ -491,9 +499,26 @@ private fun AddStudentsContent(
                 RoundedCornerShape(size = 5.dp)
             ))
         {
-            studentList.forEach {student ->
-                Column {
-                    Text(text = student.studentName)
+            Column {
+                studentList.forEach {student ->
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text(modifier = Modifier
+                            .weight(4f),
+                            text = student.studentName)
+                        IconButton(onClick = { onClickDeleteStudent(student.studentId, lessonId) },
+                            modifier = Modifier.weight(1f)) {
+                            Icon(
+                                Icons.Filled.Delete,
+                                stringResource(id = R.string.delete_new_student),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+
                 }
             }
         }
@@ -517,6 +542,6 @@ fun radioButtonColorPreview() {
 fun addStudentRowPreview() {
     val list: List<StudentModel> = listOf(StudentModel("nombre1", 0))
     Column(modifier = Modifier.height(100.dp)) {
-        AddStudentsContent(list, {})
+        //AddStudentsContent(list, {}, {}, 0)
     }
 }

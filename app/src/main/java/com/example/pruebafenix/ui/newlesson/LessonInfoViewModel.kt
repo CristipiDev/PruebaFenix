@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.pruebafenix.R
 import com.example.pruebafenix.domain.model.StudentModel
 import com.example.pruebafenix.domain.usecase.DeleteLessonFromIdUseCase
+import com.example.pruebafenix.domain.usecase.DeleteStudentFromIdUseCase
 import com.example.pruebafenix.domain.usecase.GetLessonFromIdUseCase
 import com.example.pruebafenix.domain.usecase.GetLessonWithStudentsFromIdUseCase
 import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
@@ -29,14 +30,15 @@ class LessonInfoViewModel @Inject constructor(
     private val updateLessonUseCase: UpdateLessonUseCase,
     private val getLessonWithStudentsFromIdUseCase: GetLessonWithStudentsFromIdUseCase,
     private val setNewStudentUseCase: SetNewStudentUseCase,
-    private val setNewStudentIntoLessonFromIdUseCase: SetNewStudentIntoLessonFromIdUseCase
+    private val setNewStudentIntoLessonFromIdUseCase: SetNewStudentIntoLessonFromIdUseCase,
+    private val deleteStudentFromIdUseCase: DeleteStudentFromIdUseCase
 ): ViewModel() {
 
     var state by mutableStateOf(LessonInfoUiState(
         lessonColor = R.color.salmon,
         lessonDay = "LUNES",
         dropdownDayNameList = listOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES",
-            "VIERNES", "SABADO", "DOMINGO"),
+            "VIERNES", "SÁBADO", "DOMINGO"),
         lessonColorList = listOf(R.color.salmon, R.color.blue, R.color.caramel,
                R.color.pink, R.color.lilac, R.color.orange, R.color.grey,
                R.color.purple, R.color.green)
@@ -91,7 +93,7 @@ class LessonInfoViewModel @Inject constructor(
         }
     }
 
-    fun deleteLessonFromId(lessonId: Int) {
+    fun deleteLessonFromId(lessonId: Long) {
         viewModelScope.launch {
             deleteLessonFromIdUseCase.setLessonId(lessonId)
             deleteLessonFromIdUseCase.invoke()
@@ -112,11 +114,24 @@ class LessonInfoViewModel @Inject constructor(
                 //onChangeVacancy(state.lessonVacancy - 1)
                 //updateLesson()
 
+                onChangeDialogTextField("")
+
                 setNewStudentIntoLessonFromIdUseCase.setLessonId(lessonId)
                 setNewStudentIntoLessonFromIdUseCase.setStudentId(studentId)
 
                 setNewStudentIntoLessonFromIdUseCase.invoke()
+
+                getLessonFromId(lessonId)
             }
+        }
+    }
+
+    fun deleteStudentFromId(studentId: Long, lessonId: Long) {
+        viewModelScope.launch {
+            deleteStudentFromIdUseCase.setStudentId(studentId)
+            deleteStudentFromIdUseCase.invoke()
+
+            getLessonFromId(lessonId)
         }
     }
 

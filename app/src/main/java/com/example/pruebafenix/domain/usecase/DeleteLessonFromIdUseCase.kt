@@ -7,10 +7,10 @@ import javax.inject.Inject
 class DeleteLessonFromIdUseCase @Inject constructor(
     private val lessonRepository: LessonRepository
 ) {
-    private var lessonId: Int = 0
+    private var lessonId: Long = -1
     suspend operator fun invoke() {
         lessonRepository.deleteLessonFromId(lessonId)
     }
 
-    fun setLessonId(lessonId: Int) { this.lessonId = lessonId }
+    fun setLessonId(lessonId: Long) { this.lessonId = lessonId }
 }

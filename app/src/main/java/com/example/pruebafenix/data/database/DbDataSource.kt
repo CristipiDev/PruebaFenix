@@ -8,7 +8,7 @@ import com.example.pruebafenix.data.database.entity.LessonStudentCrossRefEntity
 import com.example.pruebafenix.data.database.entity.StudentEntity
 
 @Database(entities = [LessonEntity::class, StudentEntity::class,
-    LessonStudentCrossRefEntity::class], version = 2)
+    LessonStudentCrossRefEntity::class], version = 3)
 abstract class DbDataSource: RoomDatabase() {
 
     abstract fun lessonDao(): LessonDao
