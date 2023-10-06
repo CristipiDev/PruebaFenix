@@ -3,9 +3,11 @@ package com.example.pruebafenix.ui.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.pruebafenix.data.repository.LessonRepository
 import com.example.pruebafenix.domain.usecase.SetNewLessonUseCase
 import com.example.pruebafenix.ui.calendarpage.CalendarScreen
@@ -18,17 +20,23 @@ import com.example.pruebafenix.ui.newlesson.LessonInfoViewModel
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    val viewModel = CalendarViewModel()
     NavHost(
         navController = navController,
         startDestination = AppScreens.CalendarScreen.route, builder = {
             composable(AppScreens.CalendarScreen.route) {
-                CalendarScreen(
-                    viewModel = viewModel,
-                    navController = navController
-                )
+                CalendarScreen(navController = navController)
             }
-            composable(AppScreens.LessonInfoScreen.route) {
+            composable(route = AppScreens.LessonInfoScreen.route + "?lessonId={id}",
+                arguments = listOf(
+                    navArgument("id" , {
+                        type = NavType.LongType}))
+            ) {backStackEntry ->
+                val id: Long? = backStackEntry.arguments?.getLong("id")
+
+                LessonInfoScreen(navController= navController,
+                    lessonId = id)
+            }
+            composable(route = AppScreens.LessonInfoScreen.route) {
                 LessonInfoScreen(navController= navController)
             }
         })
