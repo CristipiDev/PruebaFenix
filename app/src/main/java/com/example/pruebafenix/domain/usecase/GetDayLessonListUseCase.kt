@@ -1,9 +1,8 @@
 package com.example.pruebafenix.domain.usecase
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.pruebafenix.data.repository.LessonRepository
 import com.example.pruebafenix.domain.model.LessonModel
+import com.example.pruebafenix.ui.utils.CheckDataUtils
 import javax.inject.Inject
 
 class GetDayLessonListUseCase @Inject constructor(
@@ -12,14 +11,15 @@ class GetDayLessonListUseCase @Inject constructor(
 
     private lateinit var dayName: String
     suspend operator fun invoke(): ArrayList<LessonModel>{
-        val listAllLessons = lessonRepository.getAllLessonsFromDb()
+        val allLessonList = lessonRepository.getAllLessonsFromDb()
+        val dayLessonList = orderDayLessonList(allLessonList)
 
-        return getLessonsForDay(listAllLessons)
+        return getDayLessonList(dayLessonList)
     }
 
     fun setDayName(dayName: String) { this.dayName = dayName }
 
-    private fun getLessonsForDay(lessons: ArrayList<LessonModel>): ArrayList<LessonModel>{
+    private fun getDayLessonList(lessons: List<LessonModel>): ArrayList<LessonModel>{
         val listLessonForDay: ArrayList<LessonModel> = ArrayList()
 
         lessons.forEach {lesson ->
@@ -27,5 +27,17 @@ class GetDayLessonListUseCase @Inject constructor(
         }
 
         return listLessonForDay
+    }
+
+    private fun orderDayLessonList(dayLessons: List<LessonModel>): List<LessonModel> {
+        var orderLessons: List<LessonModel> = ArrayList()
+
+        if (!dayLessons.isNullOrEmpty()) {
+            orderLessons = dayLessons.sortedBy {
+                CheckDataUtils.splitTime(it.lessonStartTime)[0]
+            }
+        }
+
+        return orderLessons
     }
 }

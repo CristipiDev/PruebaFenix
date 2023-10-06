@@ -1,18 +1,21 @@
 package com.example.pruebafenix.data.repository
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.pruebafenix.data.database.dao.LessonDao
 import com.example.pruebafenix.data.database.entity.LessonEntity
+import com.example.pruebafenix.data.database.entity.LessonWithStudentsEntity
 import com.example.pruebafenix.domain.model.LessonModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.pruebafenix.domain.model.LessonWithStudentsModel
+import com.example.pruebafenix.domain.model.StudentModel
 import javax.inject.Inject
 
 interface LessonRepository {
     suspend fun setNewLessonInDb(newLesson: LessonModel)
     suspend fun getAllLessonsFromDb(): ArrayList<LessonModel>
+    suspend fun getLessonFromId(lessonId: Long): LessonModel
+    suspend fun deleteLessonFromId(lessonId: Long)
+    suspend fun updateLesson(lesson: LessonModel)
+
+    suspend fun getLessonWithStudentsFromId(lessonId: Long): LessonWithStudentsModel
 
 }
 
@@ -30,8 +33,6 @@ class LessonRepositoryImpl @Inject constructor(
             newLesson.lessonEndTime,
             newLesson.lessonVacancy
         ))
-
-        Log.d("idDeLesson", id.toString())
     }
 
     override suspend fun getAllLessonsFromDb(): ArrayList<LessonModel> {
@@ -53,5 +54,63 @@ class LessonRepositoryImpl @Inject constructor(
         }
         return lessonList
     }
+
+    override suspend fun getLessonFromId(lessonId: Long): LessonModel {
+        val lessonEntity = lessonDao.getLesson(lessonId = lessonId)
+        return LessonModel(
+            lessonEntity.lessonColor,
+            lessonEntity.lessonDay,
+            lessonEntity.lessonName,
+            lessonEntity.lessonStartTime,
+            lessonEntity.lessonEndTime,
+            lessonEntity.lessonVacancy,
+            lessonEntity.id
+        )
+    }
+
+    override suspend fun deleteLessonFromId(lessonId: Long) {
+        lessonDao.deleteLesson(lessonId)
+    }
+
+    override suspend fun updateLesson(lesson: LessonModel) {
+        val lessonEntity = LessonEntity(
+            lesson.lessonColor,
+            lesson.lessonDay,
+            lesson.lessonName,
+            lesson.lessonStartTime,
+            lesson.lessonEndTime,
+            lesson.lessonVacancy,
+            lesson.id
+        )
+        lessonDao.updateLesson(lessonEntity)
+    }
+
+    override suspend fun getLessonWithStudentsFromId(lessonId: Long): LessonWithStudentsModel {
+        val lessonWithStudents = lessonDao.getLessonWithStudents(lessonId)
+
+        val lesson = LessonModel(
+            lessonWithStudents.lesson.lessonColor,
+            lessonWithStudents.lesson.lessonDay,
+            lessonWithStudents.lesson.lessonName,
+            lessonWithStudents.lesson.lessonStartTime,
+            lessonWithStudents.lesson.lessonEndTime,
+            lessonWithStudents.lesson.lessonVacancy,
+            lessonWithStudents.lesson.id
+        )
+
+        val studentList: ArrayList<StudentModel> = ArrayList()
+        lessonWithStudents.students.forEach {studentEntity ->
+            studentList.add(StudentModel(
+                studentName = studentEntity.studentName,
+                studentId = studentEntity.studentId
+            ))
+        }
+
+        return LessonWithStudentsModel(
+            lesson = lesson,
+            studentList = studentList
+        )
+    }
+
 
 }

@@ -2,6 +2,7 @@ package com.example.pruebafenix.ui.calendarpage
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,10 +29,9 @@ import javax.inject.Inject
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val getDayLessonListUseCase: GetDayLessonListUseCase,
-    private val setNewLessonUseCase: SetNewLessonUseCase
+    private val getDayLessonListUseCase: GetDayLessonListUseCase
 ) : ViewModel() {
-    private val currentLessons = LessonsProvider()
+    //private val currentLessons = LessonsProvider()
     private var currentMorningLessonsList: List<LessonModel> = emptyList()
     private var currentNoonLessonsList: List<LessonModel> = emptyList()
 
@@ -76,18 +76,16 @@ class CalendarViewModel @Inject constructor(
                 }
             }
         }
-
-
         return lessonList
     }
 
-    private suspend fun setLessonListProvider(dayName: String) {
+    /*private suspend fun setLessonListProvider(dayName: String) {
         val listCurrentLessons = currentLessons.getLessonsForDay(dayName)
 
         setNewLessonUseCase.lessonToAdd(listCurrentLessons[0])
         setNewLessonUseCase.invoke()
 
-    }
+    }*/
 
     private fun getMorningNoonLessonList(listCurrentLessons: List<LessonModel>): List<List<LessonModel>> {
         val morningNoonLessonList: ArrayList<ArrayList<LessonModel>> = ArrayList()

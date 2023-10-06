@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "cb702638dc80bf8815422d8bbfca6f69",
+    "version": 3,
+    "identityHash": "fef4497d927590722bc4028bb40e9d1f",
     "entities": [
       {
         "tableName": "lesson",
@@ -88,7 +88,7 @@
       },
       {
         "tableName": "LessonStudentCrossRefEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `studentId` INTEGER NOT NULL, PRIMARY KEY(`id`, `studentId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `studentId` INTEGER NOT NULL, PRIMARY KEY(`id`, `studentId`), FOREIGN KEY(`id`) REFERENCES `lesson`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`studentId`) REFERENCES `student`(`studentId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -111,13 +111,36 @@
           ]
         },
         "indices": [],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "lesson",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "student",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "studentId"
+            ],
+            "referencedColumns": [
+              "studentId"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cb702638dc80bf8815422d8bbfca6f69')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fef4497d927590722bc4028bb40e9d1f')"
     ]
   }
 }

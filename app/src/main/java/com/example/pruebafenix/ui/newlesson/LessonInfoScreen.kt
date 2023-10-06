@@ -1,7 +1,10 @@
 package com.example.pruebafenix.ui.newlesson
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,57 +17,98 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.pruebafenix.R
+import com.example.pruebafenix.domain.model.StudentModel
+import com.example.pruebafenix.ui.common.CustomBasicTextFieldComponent
+import com.example.pruebafenix.ui.common.CustomDialogComponent
+import com.example.pruebafenix.ui.common.CustomButtonComponent
+import com.example.pruebafenix.ui.common.CustomDropdownComponent
+
 
 @Composable
 fun LessonInfoScreen(
     viewModel: LessonInfoViewModel = hiltViewModel(),
+    navController: NavController,
+    lessonId: Long? = null
+) {
+
+    val context = LocalContext.current
+
+    LaunchedEffect(true) {
+        viewModel.getLessonFromId(lessonId)
+    }
+
+    if(viewModel.state.showDialog) {
+        CustomDialogComponent(
+            value = viewModel.state.studentName,
+            setShowDialog = { viewModel.setValueShowDialog(it) },
+            setValue = viewModel::onChangeDialogTextField,
+            lessonId = viewModel.state.id,
+            viewModel::setStudentIntoLessonFromId
+        )
+    }
+
+    //TODO arreglar la screen, funciones más pequeñas
+    Column(modifier = Modifier
+        .background(colorResource(id = viewModel.state.lessonColor))) {
+        Column(modifier = Modifier.weight(1f)) {
+            MainContent(viewModel, navController)
+        }
+
+
+        ButtonsRow(viewModel.state.isUpdateDeleteLesson,
+            viewModel::deleteLessonFromId,
+            viewModel.state.id,
+            navController::popBackStack,
+            viewModel::checkErrorData,
+            context,
+            viewModel::updateLesson,
+            viewModel::setNewLessonInDb)
+    }
+
+
+}
+
+@Composable
+private fun MainContent(
+    viewModel: LessonInfoViewModel,
     navController: NavController
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = viewModel.state.lessonColor))
             .padding(10.dp)
     ) {
-        //Columna con boton de cierre
+        //Fila del boton de cierre
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -87,45 +131,26 @@ fun LessonInfoScreen(
             )
         }
 
-        //Columna de nombre de día
+        //Fila de nombre de día
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(3f),
-                    contentAlignment = Alignment.CenterStart
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = stringResource(R.string.day_title),
+                        style = MaterialTheme.typography.headlineMedium
+                    )
 
-                    VacancyRow(
-                        viewModel.state.lessonVacancy,
-                        viewModel::onChangeVacancy
+                    CustomDropdownComponent(
+                        viewModel.state.lessonDay,
+                        viewModel.state.dropdownDayNameList,
+                        viewModel.state.expanded,
+                        viewModel::changeExpandedDropdown,
+                        viewModel::onChangeDayName
                     )
                 }
-                Spacer(
-                    modifier = Modifier
-                        .weight(1f)
-                )
-                Box(modifier = Modifier.weight(3f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(R.string.day_title),
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-
-                        CustomDropdown(
-                            viewModel.state.lessonDay,
-                            viewModel.state.dropdownDayNameList,
-                            viewModel.state.expanded,
-                            viewModel::changeExpandedDropdown,
-                            viewModel::onChangeDayName
-                        )
-                    }
-                }
-
             }
 
             Spacer(
@@ -135,7 +160,7 @@ fun LessonInfoScreen(
             )
         }
 
-        //Columna de los colores
+        //Fila de los colores
         item {
             ColorsRow(
                 viewModel.state.lessonColor,
@@ -150,7 +175,7 @@ fun LessonInfoScreen(
             )
         }
 
-        //Columna de nombre de la clase
+        //Fila de nombre de la clase
         item {
             NameRow(viewModel.state.lessonName, viewModel::onChangeName)
 
@@ -162,6 +187,7 @@ fun LessonInfoScreen(
 
         }
 
+        //Fila hora inicio
         item {
             TimeRow(
                 stringResource(R.string.start_time_title),
@@ -177,6 +203,7 @@ fun LessonInfoScreen(
             )
         }
 
+        //Fila Hora fin
         item {
             TimeRow(
                 stringResource(R.string.end_time_title),
@@ -192,65 +219,33 @@ fun LessonInfoScreen(
             )
         }
 
+        //Fila de Vacancy
         item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                CustomButton ({ viewModel.setNewLessonInDb() }, navController)
-            }
-        }
-    }
-}
-
-@Composable
-private fun CustomDropdown(
-    lessonDay: String,
-    dayNameList: List<String>,
-    expanded: Boolean,
-    changeExpandedDropdown: (Boolean) -> Unit,
-    onClickItemDropdown: (String) -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth(),
-        contentAlignment = Alignment.TopEnd
-    ) {
-
-        IconButton(
-            modifier = Modifier
-                .fillMaxWidth(),
-            onClick = { changeExpandedDropdown(expanded) }) {
-
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End,
+            VacancyRow(
+                viewModel.state.lessonVacancy,
+                viewModel::onChangeVacancy)
+            Spacer(
                 modifier = Modifier
-                    .fillMaxHeight()
                     .fillMaxWidth()
-                    .padding(end = 10.dp)
-            ) {
-                Text(
-                    text = lessonDay,
-                    style = MaterialTheme.typography.labelMedium
-                )
-                Box(contentAlignment = Alignment.TopEnd) {
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { changeExpandedDropdown(true) }
-                    ) {
-                        dayNameList.forEach { day ->
-                            DropdownMenuItem(
-                                text = { Text(day) },
-                                onClick = { onClickItemDropdown(day) }
-                            )
-                        }
-                    }
-                }
+                    .height(20.dp)
+            )
+        }
+
+        //Fila de añadir estudiante
+        item {
+            if(viewModel.state.isUpdateDeleteLesson) {
+                AddStudentsContent(viewModel.state.studentList,
+                    viewModel::setValueShowDialog,
+                    viewModel::deleteStudentFromId,
+                    viewModel.state.id)
+
             }
         }
+
     }
 }
+
+
 
 @Composable
 private fun ColorsRow(
@@ -320,7 +315,7 @@ private fun NameRow(
             text = stringResource(R.string.lesson_name_title),
             style = MaterialTheme.typography.headlineMedium
         )
-        CustomBasicTextField(
+        CustomBasicTextFieldComponent(
             lessonName, onChangeName,
             Modifier
                 .fillMaxWidth()
@@ -328,55 +323,6 @@ private fun NameRow(
             keyboardType = KeyboardType.Text
         )
     }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun CustomBasicTextField(
-    lessonName: String,
-    onChangeValue: (String) -> Unit,
-    modifier: Modifier,
-    keyboardType: KeyboardType
-) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val focusManager = LocalFocusManager.current
-
-    BasicTextField(
-        maxLines = 1,
-        modifier = modifier,
-        value = lessonName,
-        onValueChange = { onChangeValue(it) },
-        textStyle = MaterialTheme.typography.labelMedium,
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Done,
-            keyboardType = keyboardType
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                keyboardController?.hide()
-                focusManager.clearFocus()
-            }),
-        decorationBox = { innerTextField ->
-            Row(modifier = Modifier
-                .drawWithContent {
-                    drawContent()
-                    clipRect {
-                        val strokeWidth = Stroke.DefaultMiter
-                        val y = size.height
-                        drawLine(
-                            brush = SolidColor(Color(R.color.dark_brown)),
-                            strokeWidth = strokeWidth,
-                            cap = StrokeCap.Square,
-                            start = Offset.Zero.copy(y = y),
-                            end = Offset(x = size.width, y = y)
-                        )
-                    }
-                }
-            ) {
-                innerTextField()
-            }
-        }
-    )
 }
 
 @Composable
@@ -406,7 +352,7 @@ private fun TimeRow(
                     .padding(end = 10.dp)
             ) {
                 Row {
-                    CustomBasicTextField(
+                    CustomBasicTextFieldComponent(
                         startTime, onChangeHour,
                         Modifier
                             .width(40.dp)
@@ -417,7 +363,7 @@ private fun TimeRow(
                         text = ":",
                         style = MaterialTheme.typography.labelMedium
                     )
-                    CustomBasicTextField(
+                    CustomBasicTextFieldComponent(
                         endTime, onChangeMin,
                         Modifier
                             .width(40.dp)
@@ -432,96 +378,193 @@ private fun TimeRow(
 
     }
 }
-
 @Composable
 private fun VacancyRow(
     vacancy: Int,
-    onChangeVacancy: (String) -> Unit
+    onClick: (Int) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    Column {
         Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            textAlign = TextAlign.Center,
             text = stringResource(R.string.vacancy_title),
             style = MaterialTheme.typography.headlineMedium
         )
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            contentAlignment = Alignment.TopEnd
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End,
+            IconButton(
                 modifier = Modifier
                     .padding(end = 10.dp)
-            ) {
-                Row {
-                    CustomBasicTextField(
-                        vacancy.toString(), { onChangeVacancy },
-                        Modifier
-                            .width(40.dp)
-                            .padding(end = 5.dp),
-                        keyboardType = KeyboardType.Number
-                    )
-                }
-
+                    .width(30.dp),
+                onClick = { onClick(vacancy.dec()) }) {
+                Icon(
+                    ImageVector.vectorResource(R.drawable.minus_solid),
+                    "Restar plaza disponible",
+                    tint = MaterialTheme.colorScheme.primary)
+            }
+            Text(text = vacancy.toString(),
+                style = MaterialTheme.typography.labelMedium)
+            IconButton(
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .width(30.dp),
+                onClick = { onClick(vacancy.inc()) }) {
+                Icon(
+                    ImageVector.vectorResource(R.drawable.add_solid),
+                    "Añadir plaza disponible",
+                    tint = MaterialTheme.colorScheme.primary)
             }
 
         }
-
     }
 }
 
 @Composable
-private fun CustomButton(
-    addNewLesson: () -> Unit,
-    navController: NavController
-
-) {
-    TextButton(onClick = {
-        addNewLesson()
-        navController.popBackStack()}) {
-        Box(
-            modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(size = 5.dp)
+private fun AddStudentsContent(
+    studentList: List<StudentModel>,
+    onClickAddStudent: (Boolean) -> Unit,
+    onClickDeleteStudent: (Long, Long) -> Unit,
+    lessonId: Long
+){
+    Column {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+            verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .weight(4f),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(
+                    text = stringResource(id = R.string.lesson_student_list),
+                    style = MaterialTheme.typography.headlineMedium
                 )
-                .padding(horizontal = 16.dp, vertical = 12.dp), // inner padding
-        ) {
-            Text(
-                style = MaterialTheme.typography.labelSmall,
-                text = stringResource(R.string.save_button)
-            )
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(1f),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                IconButton(onClick = { onClickAddStudent(true) }) {
+                    Icon(
+                        Icons.Filled.Add,
+                        stringResource(id = R.string.add_new_student),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                1.dp,
+                MaterialTheme.colorScheme.primary,
+                RoundedCornerShape(size = 5.dp)
+            ))
+        {
+            Column {
+                studentList.forEach {student ->
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(horizontal = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text(modifier = Modifier
+                            .weight(4f),
+                            text = student.studentName)
+                        IconButton(onClick = { onClickDeleteStudent(student.studentId, lessonId) },
+                            modifier = Modifier.weight(1f)) {
+                            Icon(
+                                Icons.Filled.Delete,
+                                stringResource(id = R.string.delete_new_student),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    if (studentList[studentList.size-1].studentId != student.studentId) {
+                        Divider(
+                            color = MaterialTheme.colorScheme.primary,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(horizontal = 10.dp)
+                        )
+                    }
+
+                }
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun Preview() {
-    var state = LessonInfoUiState()
-    val dropdownDayNameList =
-        listOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO")
-
-    state = state.copy(
-        lessonColor = R.color.salmon,
-        dropdownDayNameList = dropdownDayNameList,
-        lessonDay = "LUNES",
-        lessonColorList = listOf(
-            R.color.salmon, R.color.blue, R.color.caramel,
-            R.color.pink, R.color.lilac, R.color.orange, R.color.grey,
-            R.color.purple, R.color.green
-        )
-    )
-
-    MainBody(state)
+fun ButtonsRow(
+    isUpdateDelete: Boolean,
+    deleteLesson: (Long) -> Unit,
+    lessonId: Long,
+    popBackStack: () -> Unit,
+    checkErrorData: (Context) -> String,
+    context: Context,
+    updateLesson: () -> Unit,
+    setNewLessonInDb: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            if (isUpdateDelete) {
+                CustomButtonComponent(
+                    text = stringResource(R.string.delete_button),
+                    onClickButton = {
+                        deleteLesson(lessonId)
+                        popBackStack()},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            1.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(size = 5.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+        Box(modifier = Modifier.weight(1f)) {
+            CustomButtonComponent(
+                text = stringResource(R.string.save_button),
+                {
+                    val errorString = checkErrorData(context)
+                    if (errorString.isEmpty()) {
+                        if (isUpdateDelete) {
+                            updateLesson()
+                            popBackStack()
+                        }else {
+                            setNewLessonInDb()
+                            popBackStack()
+                        }
+                    } else { Toast.makeText(context, errorString, Toast.LENGTH_LONG).show()}
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(size = 5.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                MaterialTheme.colorScheme.onPrimary)
+        }
+    }
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -534,143 +577,12 @@ fun radioButtonColorPreview() {
     ColorsRow(R.color.salmon, list, {})
 }
 
-
+@Preview(showBackground = true)
 @Composable
-private fun MainBody(
-    state: LessonInfoUiState
-) {
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorResource(id = state.lessonColor))
-            .padding(10.dp)
-    ) {
-        //Columna con boton de cierre
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            )
-            {
-                IconButton(onClick = { }) {
-                    Icon(
-                        Icons.Filled.Close,
-                        "Close",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-            )
-        }
-
-        //Columna de nombre de día
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-
-                    VacancyRow(10, {})
-                }
-                Box(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(R.string.day_title),
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-
-                        CustomDropdown(
-                            state.lessonDay,
-                            state.dropdownDayNameList,
-                            state.expanded,
-                            { },
-                            { }
-                        )
-                    }
-                }
-
-            }
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-            )
-        }
-
-        //Columna de los colores
-        item {
-            ColorsRow(
-                state.lessonColor,
-                state.lessonColorList,
-                {}
-            )
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(30.dp)
-            )
-        }
-
-        //Columna de nombre de la clase
-        item {
-            NameRow(state.lessonName, {})
-
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-            )
-
-        }
-
-        item {
-            TimeRow(
-                "Inicio",
-                state.lessonStartHourTime,
-                state.lessonStartMinTime,
-                {},
-                {})
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-            )
-        }
-
-        item {
-            TimeRow(
-                "Fin",
-                state.lessonStartHourTime,
-                state.lessonStartMinTime,
-                {},
-                {})
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-            )
-        }
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                //CustomButton({})
-            }
-        }
+fun addStudentRowPreview() {
+    val list: List<StudentModel> = listOf(StudentModel("nombre1", 0))
+    val event: (Long, Long) -> Unit = (fun(x: Long, y: Long) { println(x) })
+    Column(modifier = Modifier.height(100.dp)) {
+        AddStudentsContent(list, {}, event, 0)
     }
 }
