@@ -85,7 +85,7 @@ class LessonInfoViewModel @Inject constructor(
                     lessonEndMinTime = splitTime(selectedLesson.lesson.lessonEndTime)[1],
                     lessonEndTime = selectedLesson.lesson.lessonEndTime,
                     lessonVacancy = selectedLesson.lesson.lessonVacancy,
-                    id = selectedLesson.lesson.id,
+                    id = lessonId,
                     isUpdateDeleteLesson = true,
                     studentList = selectedLesson.studentList
                 )

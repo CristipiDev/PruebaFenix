@@ -1,5 +1,6 @@
 package com.example.pruebafenix.ui.newlesson
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,21 +67,45 @@ fun LessonInfoScreen(
         viewModel.getLessonFromId(lessonId)
     }
 
-    if(viewModel.state.showDialog)
-        lessonId?.let {
-            CustomDialogComponent(
-                value = viewModel.state.studentName,
-                setShowDialog = { viewModel.setValueShowDialog(it) },
-                setValue = viewModel::onChangeDialogTextField,
-                lessonId = it,
-                viewModel::setStudentIntoLessonFromId
-            )
-        }
+    if(viewModel.state.showDialog) {
+        CustomDialogComponent(
+            value = viewModel.state.studentName,
+            setShowDialog = { viewModel.setValueShowDialog(it) },
+            setValue = viewModel::onChangeDialogTextField,
+            lessonId = viewModel.state.id,
+            viewModel::setStudentIntoLessonFromId
+        )
+    }
+
     //TODO arreglar la screen, funciones más pequeñas
+    Column(modifier = Modifier
+        .background(colorResource(id = viewModel.state.lessonColor))) {
+        Column(modifier = Modifier.weight(1f)) {
+            MainContent(viewModel, navController)
+        }
+
+
+        ButtonsRow(viewModel.state.isUpdateDeleteLesson,
+            viewModel::deleteLessonFromId,
+            viewModel.state.id,
+            navController::popBackStack,
+            viewModel::checkErrorData,
+            context,
+            viewModel::updateLesson,
+            viewModel::setNewLessonInDb)
+    }
+
+
+}
+
+@Composable
+private fun MainContent(
+    viewModel: LessonInfoViewModel,
+    navController: NavController
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(id = viewModel.state.lessonColor))
             .padding(10.dp)
     ) {
         //Fila del boton de cierre
@@ -201,75 +225,23 @@ fun LessonInfoScreen(
                 viewModel.state.lessonVacancy,
                 viewModel::onChangeVacancy)
             Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(20.dp)
-                    )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(20.dp)
+            )
         }
 
         //Fila de añadir estudiante
         item {
             if(viewModel.state.isUpdateDeleteLesson) {
-                if (lessonId != null) {
-                    AddStudentsContent(viewModel.state.studentList,
-                        viewModel::setValueShowDialog,
-                        viewModel::deleteStudentFromId,
-                        lessonId)
-                }
+                AddStudentsContent(viewModel.state.studentList,
+                    viewModel::setValueShowDialog,
+                    viewModel::deleteStudentFromId,
+                    viewModel.state.id)
+
             }
         }
 
-        //Row de botones
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    if (viewModel.state.isUpdateDeleteLesson) {
-                        CustomButtonComponent(
-                            text = stringResource(R.string.delete_button),
-                            onClickButton = {
-                                viewModel.deleteLessonFromId(viewModel.state.id)
-                                navController.popBackStack()},
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .border(
-                                    1.dp,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    shape = RoundedCornerShape(size = 5.dp)
-                                )
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-                Box(modifier = Modifier.weight(1f)) {
-                    CustomButtonComponent(
-                        text = stringResource(R.string.save_button),
-                        {
-                            val errorString = viewModel.checkErrorData(context)
-                            if (errorString.isEmpty()) {
-                                if (viewModel.state.isUpdateDeleteLesson) {
-                                    viewModel.updateLesson()
-                                    navController.popBackStack()
-                                }else {
-                                    viewModel.setNewLessonInDb()
-                                    navController.popBackStack()
-                                }
-                            } else { Toast.makeText(context, errorString, Toast.LENGTH_LONG).show()}
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = RoundedCornerShape(size = 5.dp)
-                            )
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        MaterialTheme.colorScheme.onPrimary)
-                }
-            }
-        }
     }
 }
 
@@ -528,6 +500,67 @@ private fun AddStudentsContent(
 
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ButtonsRow(
+    isUpdateDelete: Boolean,
+    deleteLesson: (Long) -> Unit,
+    lessonId: Long,
+    popBackStack: () -> Unit,
+    checkErrorData: (Context) -> String,
+    context: Context,
+    updateLesson: () -> Unit,
+    setNewLessonInDb: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            if (isUpdateDelete) {
+                CustomButtonComponent(
+                    text = stringResource(R.string.delete_button),
+                    onClickButton = {
+                        deleteLesson(lessonId)
+                        popBackStack()},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            1.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(size = 5.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+        Box(modifier = Modifier.weight(1f)) {
+            CustomButtonComponent(
+                text = stringResource(R.string.save_button),
+                {
+                    val errorString = checkErrorData(context)
+                    if (errorString.isEmpty()) {
+                        if (isUpdateDelete) {
+                            updateLesson()
+                            popBackStack()
+                        }else {
+                            setNewLessonInDb()
+                            popBackStack()
+                        }
+                    } else { Toast.makeText(context, errorString, Toast.LENGTH_LONG).show()}
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(size = 5.dp)
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                MaterialTheme.colorScheme.onPrimary)
         }
     }
 }
