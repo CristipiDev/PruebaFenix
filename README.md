@@ -23,3 +23,17 @@ This is the main page of the app, as you can see it's a calendar arrange by day.
     <td><img src="https://i.imgur.com/XYsnomj.png" title="source: imgur.com" width="300"/></td>
   </tr>
 </table>
+
+# New Lesson page
+To navegate to this page you will need to click in the "+" button at the top of the Main page. </br>
+Once you access to this page, you will be able to create a new Lesson with the following pareameters: Day of the week (as seen in the picture a dropdown will show to select the day), color of the lesson (the color for the lesson's background), name of the lesson, start time, end time and number of vacancies. If you click in the "x" at the top of the page you will loose all the data that you didn't save. To save the lesson click on "Guardar". </br>
+
+Worth mencion is that: all the data are required in order to save the lesson, if something isn't filled or is filled incorrectly, a Toast is going to show with the info os the error (as shown on the last image).
+
+<table>
+  <tr>
+    <td><img src="https://i.imgur.com/Hw10fMY.png" title="source: imgur.com" width="300"/></td>
+    <td><img src="https://i.imgur.com/z8erwVp.png" title="source: imgur.com" width="300"/></td>
+    <td><img src="https://i.imgur.com/m3H9LmV.png" title="source: imgur.com" width="300"/></td>
+  </tr>
+</table>
